@@ -1,32 +1,33 @@
 ### Overview
 
-This repository provides code building personal independent quantum-platform.
+This repository provides code building personal independent quantum-platform.<br>
 
-The basic structure is listed below:
-├── quantum-platform/
-│   ├── __init__.py
-│   ├── db.py
-│   ├── schema.sql
-│   ├── auth.py
-│   ├── quantum-circuit.py
-│   ├── templates/
-│   │   ├── base.html
-│   │   ├── auth/
-│   │   │   ├── login.html
-│   │   │   └── register.html
-│   │   └── quantum-circuit/
-│   │       ├── menu.html
-│   │       ├── button.html
-│   │       ├── toolsbox.html
-│   │       └── clipboard.html
-│   └── static/
-│       ├── picture.jpg
-│       └── style.css
-├── tests/
-|   └── test.py
+The basic structure is listed below:<br>
+├── quantum-platform/<br>
+│   ├── __init__.py<br>
+│   ├── db.py<br>
+│   ├── schema.sql<br>
+│   ├── auth.py<br>
+│   ├── quantum-circuit.py<br>
+│   ├── templates/<br>
+│   │   ├── base.html<br>
+│   │   ├── auth/<br>
+│   │   │   ├── login.html<br>
+│   │   │   └── register.html<br>
+│   │   └── quantum-circuit/<br>
+│   │       ├── menu.html<br>
+│   │       ├── button.html<br>
+│   │       ├── toolsbox.html<br>
+│   │       └── clipboard.html<br>
+│   └── static/<br>
+│       ├── picture.jpg<br>
+│       └── style.css<br>
+├── tests/<br>
+|   └── test.py<br>
 
-##evironment
-windows10
-python3.7 flask1.0 
-prerequisite follow the document: 
-http://flask.pocoo.org/docs/1.0/
+## evironment
+
+windows10<br>
+python3.7 flask1.0 <br>
+prerequisite follow the document: <br>
+http://flask.pocoo.org/docs/1.0/<br>
