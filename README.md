@@ -3,25 +3,25 @@
 This repository provides code building personal independent quantum-platform.<br>
 
 The basic structure is listed below:<br>
-├── quantum-platform/<br>
+├── quantum/<br>
 │   ├── __init__.py<br>
 │   ├── db.py<br>
 │   ├── schema.sql<br>
 │   ├── auth.py<br>
-│   ├── quantum-circuit.py<br>
+│   ├── quantumCircuit.py<br>
 │   ├── templates/<br>
 │   │   ├── base.html<br>
 │   │   ├── auth/<br>
 │   │   │   ├── login.html<br>
 │   │   │   └── register.html<br>
-│   │   └── quantum-circuit/<br>
+│   │   └── quantumCircuit/<br>
 │   │       ├── menu.html<br>
 │   │       ├── button.html<br>
 │   │       ├── toolsbox.html<br>
 │   │       └── clipboard.html<br>
 │   └── static/<br>
-│       ├── picture.jpg<br>
-│       └── style.css<br>
+│   │   ├── picture.jpg<br>
+│   │   └── style.css<br>
 ├── tests/<br>
 |   └── test.py<br>
 
