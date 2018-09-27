@@ -15,10 +15,7 @@ The basic structure is listed below:<br>
 │   │   │   ├── login.html<br>
 │   │   │   └── register.html<br>
 │   │   └── quantumCircuit/<br>
-│   │       ├── menu.html<br>
-│   │       ├── button.html<br>
-│   │       ├── toolsbox.html<br>
-│   │       └── clipboard.html<br>
+│   │       └── quirk.html<br>
 │   └── static/<br>
 │   │   ├── picture.jpg<br>
 │   │   └── style.css<br>
