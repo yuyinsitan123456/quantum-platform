@@ -12,6 +12,15 @@
         <!-- End Analytics -->
     </head>
     <body style="margin: 0">
+        <ul>
+    {% if g.user %}
+      <li><span>{{ g.user['username'] }}</span>
+      <li><a href="{{ url_for('auth.logout') }}">退出</a>
+    {% else %}
+      <li><a href="{{ url_for('auth.register') }}">注册</a>
+      <li><a href="{{ url_for('auth.login') }}">登陆</a>
+    {% endif %}
+        </ul>
         <!-- Primary content -->
         <div id="inspectorDiv" style="display: none">
             <!-- Buttons -->
@@ -20,12 +29,13 @@
                 &nbsp;
                 &nbsp;
                 &nbsp;
-                <button id="clear-circuit-button" style="min-width: 50px; min-height: 30px;">Clear Circuit</button>
-                <button id="clear-all-button" style="min-width: 50px; min-height: 30px;">Clear ALL</button>
+                <button id="clear-circuit-button" style="min-width: 50px; min-height: 30px;">清除线路</button>
+                <button id="clear-all-button" style="min-width: 50px; min-height: 30px;">清除所有</button>
                 &nbsp;
                 &nbsp;
-                <button id="undo-button" style="min-width: 50px; min-height: 30px;">Undo</button>
-                <button id="redo-button" style="min-width: 50px; min-height: 30px;">Redo</button>
+                <button id="undo-button" style="min-width: 50px; min-height: 30px;">撤销</button>
+                <button id="redo-button" style="min-width: 50px; min-height: 30px;">恢复</button>
+                <button id="run-button" style="min-width: 50px; min-height: 30px;" >运行</button>
                 &nbsp;
                 &nbsp;
 

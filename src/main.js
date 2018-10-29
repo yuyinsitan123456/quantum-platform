@@ -32,6 +32,7 @@ import {Util} from "src/base/Util.js"
 import {initializedWglContext} from "src/webgl/WglContext.js"
 import {watchDrags, isMiddleClicking, eventPosRelativeTo} from "src/browser/MouseWatcher.js"
 import {ObservableValue, ObservableSource} from "src/base/Obs.js"
+import {initRun, obsExportsIsShowing} from "src/ui/run.js"
 import {initExports, obsExportsIsShowing} from "src/ui/exports.js"
 import {initForge, obsForgeIsShowing} from "src/ui/forge.js"
 import {initMenu, obsMenuIsShowing, closeMenu} from "src/ui/menu.js"
@@ -276,6 +277,7 @@ canvasDiv.addEventListener('mouseleave', () => {
 let obsIsAnyOverlayShowing = new ObservableSource();
 initUrlCircuitSync(revision);
 // initExports(revision, obsIsAnyOverlayShowing.observable());
+initRun(revision, obsIsAnyOverlayShowing.observable());
 // initForge(revision, obsIsAnyOverlayShowing.observable());
 initUndoRedo(revision, obsIsAnyOverlayShowing.observable());
 initClear(revision, obsIsAnyOverlayShowing.observable());

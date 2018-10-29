@@ -25,10 +25,6 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
-
     # apply the blueprints to the app
     from quantum import quantumCircuit
     from quantum import auth

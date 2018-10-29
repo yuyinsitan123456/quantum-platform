@@ -6,6 +6,8 @@ from werkzeug.exceptions import abort
 from quantum.auth import login_required
 from quantum.db import get_db
 
+import cirq
+
 bp = Blueprint('quantumCircuit', __name__)
 
 
@@ -48,3 +50,23 @@ def get_post(id, check_author=True):
 
     return post
 
+@bp.route('/run')
+
+def run():
+    # Pick a qubit.
+    qubit = cirq.GridQubit(0, 0)
+
+    # Create a circuit
+    circuit = cirq.Circuit.from_ops(
+        cirq.X(qubit)**0.5,  # Square root of NOT.
+        cirq.measure(qubit, key='m')  # Measurement.
+    )
+    print("Circuit:")
+    print(circuit)
+
+    # Simulate the circuit several times.
+    simulator = cirq.google.XmonSimulator()
+    result = simulator.run(circuit, repetitions=20)
+    print("Results:")
+    print(result)
+    return render_template('quantumCircuit/result.html', circuit=circuit, result=result)
