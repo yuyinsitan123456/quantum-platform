@@ -18,7 +18,7 @@ import {selectAndCopyToClipboard} from "src/browser/Clipboard.js"
 import {fromJsonText_CircuitDefinition} from "src/circuit/Serializer.js"
 
 const runIsVisible = new ObservableValue(false);
-const obsExportsIsShowing = runIsVisible.observable().whenDifferent();
+const obsRunsIsShowing = runIsVisible.observable().whenDifferent();
 
 /**
  * @param {!Revision} revision
@@ -39,7 +39,23 @@ function initRun(revision, obsIsAnyOverlayShowing) {
                 runIsVisible.set(false)
             }
         });
+        obsRunsIsShowing.subscribe(showing => {
+            runDiv.style.display = showing ? 'block' : 'none';
+        });
+    })();
+    // Export JSON.
+    (() => {
+        const jsonTextElement = /** @type {HTMLPreElement} */ document.getElementById('run-circuit-json-pre');
+        revision.latestActiveCommit().subscribe(jsonText => {
+            //noinspection UnusedCatchParameterJS
+            try {
+                let val = JSON.parse(jsonText);
+                jsonTextElement.innerText = JSON.stringify(val, null, '  ');
+            } catch (_) {
+                jsonTextElement.innerText = jsonText;
+            }
+        });
     })();
 }
 
-export {initRun, obsExportsIsShowing}
+export {initRun, obsRunsIsShowing}

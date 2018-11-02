@@ -51,7 +51,6 @@ def get_post(id, check_author=True):
     return post
 
 @bp.route('/run')
-
 def run():
     # Pick a qubit.
     qubit = cirq.GridQubit(0, 0)
