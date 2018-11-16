@@ -33,6 +33,7 @@ import {initializedWglContext} from "src/webgl/WglContext.js"
 import {watchDrags, isMiddleClicking, eventPosRelativeTo} from "src/browser/MouseWatcher.js"
 import {ObservableValue, ObservableSource} from "src/base/Obs.js"
 import {initRun, obsRunsIsShowing} from "src/ui/run.js"
+import {initSparkRun, obSparkRunsIsShowing} from "src/ui/sparkrun.js"
 import {initExports, obsExportsIsShowing} from "src/ui/exports.js"
 import {initForge, obsForgeIsShowing} from "src/ui/forge.js"
 import {initMenu, obsMenuIsShowing, closeMenu} from "src/ui/menu.js"
@@ -278,6 +279,7 @@ let obsIsAnyOverlayShowing = new ObservableSource();
 initUrlCircuitSync(revision);
 // initExports(revision, obsIsAnyOverlayShowing.observable());
 initRun(revision, obsIsAnyOverlayShowing.observable());
+initSparkRun(revision, obsIsAnyOverlayShowing.observable());
 // initForge(revision, obsIsAnyOverlayShowing.observable());
 initUndoRedo(revision, obsIsAnyOverlayShowing.observable());
 initClear(revision, obsIsAnyOverlayShowing.observable());

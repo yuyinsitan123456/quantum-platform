@@ -17,27 +17,28 @@ import {ObservableValue} from "src/base/Obs.js"
 import {selectAndCopyToClipboard} from "src/browser/Clipboard.js"
 import {fromJsonText_CircuitDefinition} from "src/circuit/Serializer.js"
 
-const runIsVisible = new ObservableValue(false);
-const obsRunsIsShowing = runIsVisible.observable().whenDifferent();
+const sparkRunIsVisible = new ObservableValue(false);
+const obSparkRunsIsShowing = sparkRunIsVisible.observable().whenDifferent();
 
 /**
  * @param {!Revision} revision
  * @param {!Observable.<!boolean>} obsIsAnyOverlayShowing
  */
-function initRun(revision, obsIsAnyOverlayShowing) {
+function initSparkRun(revision, obsIsAnyOverlayShowing) {
     // send quantum circuit.
     (() => {
-        const runButton = /** @type {!HTMLButtonElement} */ document.getElementById('run-button');
+        const sparkRunButton = /** @type {!HTMLButtonElement} */ document.getElementById('sparkrun-button');
         revision.latestActiveCommit().zipLatest(obsIsAnyOverlayShowing, (_, b) => b).subscribe(anyShowing => {
-            runButton.disabled = revision.isAtBeginningOfHistory() || anyShowing;
+            sparkRunButton.disabled = revision.isAtBeginningOfHistory() || anyShowing;
         });
         const runOverlay = /** @type {!HTMLDivElement} */ document.getElementById('run-overlay');
         const runDiv = /** @type {HTMLDivElement} */ document.getElementById('run-div');
-        runButton.addEventListener('click', () => {
-            $.getJSON("{{ url_for('quantumCircuit.run')}}", {
+        sparkRunButton.addEventListener('click', () => {
+
+            $.getJSON("{{ url_for('quantumCircuit.sparkrun')}}", {
                 data: document.getElementById('run-circuit-json-pre').innerText
             }, function (data) {
-                runIsVisible.set(true);
+                sparkRunIsVisible.set(true);
 
                 document.getElementById('run-circuit-json-show').innerText = JSON.stringify(data);
                 xDomain = 0;
@@ -50,15 +51,15 @@ function initRun(revision, obsIsAnyOverlayShowing) {
                 }
             });
         });
-        obsIsAnyOverlayShowing.subscribe(e => runButton.disabled = e);
-        runOverlay.addEventListener('click', () => runIsVisible.set(false));
+        obsIsAnyOverlayShowing.subscribe(e => sparkRunButton.disabled = e);
+        runOverlay.addEventListener('click', () => sparkRunIsVisible.set(false));
         document.addEventListener('keydown', e => {
             const ESC_KEY = 27;
             if (e.keyCode === ESC_KEY) {
-                runIsVisible.set(false)
+                sparkRunIsVisible.set(false)
             }
         });
-        obsRunsIsShowing.subscribe(showing => {
+        obSparkRunsIsShowing.subscribe(showing => {
             runDiv.style.display = showing ? 'block' : 'none';
         });
     })();
@@ -77,4 +78,4 @@ function initRun(revision, obsIsAnyOverlayShowing) {
     })();
 }
 
-export {initRun, obsRunsIsShowing}
+export {initSparkRun, obSparkRunsIsShowing}

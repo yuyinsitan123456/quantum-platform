@@ -35,6 +35,7 @@
                 <button id="undo-button" style="min-width: 50px; min-height: 30px;">撤销</button>
                 <button id="redo-button" style="min-width: 50px; min-height: 30px;">恢复</button>
                 <button id="run-button" style="min-width: 50px; min-height: 30px;" >运行</button>
+                <button id="sparkrun-button" style="min-width: 50px; min-height: 30px;" >分布式运行</button>
                 &nbsp;
                 &nbsp;
 
@@ -14894,7 +14895,6 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
     SwapHalf: SwapGateHalf
   };
   Gates.Displays = {
-    AmplitudeDisplayFamily: AmplitudeDisplayFamily,
     ProbabilityDisplayFamily: ProbabilityDisplayFamily,
     SampleDisplayFamily: SampleDisplayFamily,
     DensityMatrixDisplayFamily: DensityMatrixDisplayFamily,
@@ -14938,7 +14938,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   Gates.UniversalNot = UniversalNotGate;
   Gates.XorGates = XorGates;
   Gates.ZeroGate = ZeroGate;
-  Gates.KnownToSerializer = $traceurRuntime.spread(Controls.all, InputGates.all, [MeasurementGate, Detector, SwapGateHalf, SpacerGate, UniversalNotGate, ErrorInjectionGate, ZeroGate, NeGate], AmplitudeDisplayFamily.all, ProbabilityDisplayFamily.all, SampleDisplayFamily.all, DensityMatrixDisplayFamily.all, [BlochSphereDisplay], ArithmeticGates.all, BitCountGates.all, ComparisonGates.all, CountingGates.all, CycleBitsGates.all, ExponentiatingGates.all, FourierTransformGates.all, HalfTurnGates.all, IncrementGates.all, InterleaveBitsGates.all, ModularAdditionGates.all, ModularIncrementGates.all, ModularMultiplicationGates.all, ModularMultiplyAccumulateGates.all, MultiplicationGates.all, MultiplyAccumulateGates.all, QuarterTurnGates.all, ParametrizedRotationGates.all, PhaseGradientGates.all, PivotFlipGates.all, PostSelectionGates.all, PoweringGates.all, ReverseBitsGateFamily.all, VariousXGates.all, VariousYGates.all, VariousZGates.all, XorGates.all);
+  Gates.KnownToSerializer = $traceurRuntime.spread(Controls.all, InputGates.all, [MeasurementGate, Detector, SwapGateHalf, SpacerGate, UniversalNotGate, ErrorInjectionGate, ZeroGate, NeGate], ProbabilityDisplayFamily.all, SampleDisplayFamily.all, DensityMatrixDisplayFamily.all, [BlochSphereDisplay], ArithmeticGates.all, BitCountGates.all, ComparisonGates.all, CountingGates.all, CycleBitsGates.all, ExponentiatingGates.all, FourierTransformGates.all, HalfTurnGates.all, IncrementGates.all, InterleaveBitsGates.all, ModularAdditionGates.all, ModularIncrementGates.all, ModularMultiplicationGates.all, ModularMultiplyAccumulateGates.all, MultiplicationGates.all, MultiplyAccumulateGates.all, QuarterTurnGates.all, ParametrizedRotationGates.all, PhaseGradientGates.all, PivotFlipGates.all, PostSelectionGates.all, PoweringGates.all, ReverseBitsGateFamily.all, VariousXGates.all, VariousYGates.all, VariousZGates.all, XorGates.all);
   var gatesById = seq(Gates.KnownToSerializer).keyedBy(function(g) {
     return g.serializedId;
   });
@@ -14946,8 +14946,8 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
     return gatesById.has(id) ? gatesById.get(id) : customGateSet.findGateWithSerializedId(id);
   };
   Gates.TopToolboxGroups = [{
-    hint: "Half Turns",
-    gates: [HalfTurnGates.Z, SwapGateHalf, HalfTurnGates.Y, undefined, HalfTurnGates.X, HalfTurnGates.H]
+    hint: "基本量子门",
+    gates: [HalfTurnGates.Z, SwapGateHalf, HalfTurnGates.Y, Controls.Control, HalfTurnGates.X, HalfTurnGates.H]
   }];
   Gates.BottomToolboxGroups = [];
   return {get Gates() {
@@ -17817,16 +17817,19 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   var $__16 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/run.js", "src/main.js")),
       initRun = $__16.initRun,
       obsRunsIsShowing = $__16.obsRunsIsShowing;
-  var $__17 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/exports.js", "src/main.js")),
-      initExports = $__17.initExports,
-      obsExportsIsShowing = $__17.obsExportsIsShowing;
-  var $__18 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/forge.js", "src/main.js")),
-      initForge = $__18.initForge,
-      obsForgeIsShowing = $__18.obsForgeIsShowing;
-  var $__19 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/menu.js", "src/main.js")),
-      initMenu = $__19.initMenu,
-      obsMenuIsShowing = $__19.obsMenuIsShowing,
-      closeMenu = $__19.closeMenu;
+  var $__17 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/sparkrun.js", "src/main.js")),
+      initSparkRun = $__17.initSparkRun,
+      obSparkRunsIsShowing = $__17.obSparkRunsIsShowing;
+  var $__18 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/exports.js", "src/main.js")),
+      initExports = $__18.initExports,
+      obsExportsIsShowing = $__18.obsExportsIsShowing;
+  var $__19 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/forge.js", "src/main.js")),
+      initForge = $__19.initForge,
+      obsForgeIsShowing = $__19.obsForgeIsShowing;
+  var $__20 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/menu.js", "src/main.js")),
+      initMenu = $__20.initMenu,
+      obsMenuIsShowing = $__20.obsMenuIsShowing,
+      closeMenu = $__20.closeMenu;
   var initUndoRedo = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/undo.js", "src/main.js")).initUndoRedo;
   var initClear = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/clear.js", "src/main.js")).initClear;
   var initUrlCircuitSync = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/ui/url.js", "src/main.js")).initUrlCircuitSync;
@@ -17991,6 +17994,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   var obsIsAnyOverlayShowing = new ObservableSource();
   initUrlCircuitSync(revision);
   initRun(revision, obsIsAnyOverlayShowing.observable());
+  initSparkRun(revision, obsIsAnyOverlayShowing.observable());
   initUndoRedo(revision, obsIsAnyOverlayShowing.observable());
   initClear(revision, obsIsAnyOverlayShowing.observable());
   initTitleSync(revision);
@@ -23408,6 +23412,11 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   function initRun(revision, obsIsAnyOverlayShowing) {
     (function() {
       var runButton = document.getElementById('run-button');
+      revision.latestActiveCommit().zipLatest(obsIsAnyOverlayShowing, function(_, b) {
+        return b;
+      }).subscribe(function(anyShowing) {
+        runButton.disabled = revision.isAtBeginningOfHistory() || anyShowing;
+      });
       var runOverlay = document.getElementById('run-overlay');
       var runDiv = document.getElementById('run-div');
       runButton.addEventListener('click', function() {
@@ -23501,6 +23510,76 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   };
 });
 //# sourceURL=src/ui/sim.js
+;$traceurRuntime.registerModule("src/ui/sparkrun.js", [], function() {
+  "use strict";
+  var __moduleName = "src/ui/sparkrun.js";
+  var Config = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/Config.js", "src/ui/sparkrun.js")).Config;
+  var ObservableValue = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/base/Obs.js", "src/ui/sparkrun.js")).ObservableValue;
+  var selectAndCopyToClipboard = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/browser/Clipboard.js", "src/ui/sparkrun.js")).selectAndCopyToClipboard;
+  var fromJsonText_CircuitDefinition = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/circuit/Serializer.js", "src/ui/sparkrun.js")).fromJsonText_CircuitDefinition;
+  var sparkRunIsVisible = new ObservableValue(false);
+  var obSparkRunsIsShowing = sparkRunIsVisible.observable().whenDifferent();
+  function initSparkRun(revision, obsIsAnyOverlayShowing) {
+    (function() {
+      var sparkRunButton = document.getElementById('sparkrun-button');
+      revision.latestActiveCommit().zipLatest(obsIsAnyOverlayShowing, function(_, b) {
+        return b;
+      }).subscribe(function(anyShowing) {
+        sparkRunButton.disabled = revision.isAtBeginningOfHistory() || anyShowing;
+      });
+      var runOverlay = document.getElementById('run-overlay');
+      var runDiv = document.getElementById('run-div');
+      sparkRunButton.addEventListener('click', function() {
+        $.getJSON("{{ url_for('quantumCircuit.sparkrun')}}", {data: document.getElementById('run-circuit-json-pre').innerText}, function(data) {
+          sparkRunIsVisible.set(true);
+          document.getElementById('run-circuit-json-show').innerText = JSON.stringify(data);
+          xDomain = 0;
+          yDomain = 0;
+          yDomainMin = 0;
+          xDomainMin = 0;
+          if (Array.isArray(data)) {
+            updateChart(data);
+          }
+        });
+      });
+      obsIsAnyOverlayShowing.subscribe(function(e) {
+        return sparkRunButton.disabled = e;
+      });
+      runOverlay.addEventListener('click', function() {
+        return sparkRunIsVisible.set(false);
+      });
+      document.addEventListener('keydown', function(e) {
+        var ESC_KEY = 27;
+        if (e.keyCode === ESC_KEY) {
+          sparkRunIsVisible.set(false);
+        }
+      });
+      obSparkRunsIsShowing.subscribe(function(showing) {
+        runDiv.style.display = showing ? 'block' : 'none';
+      });
+    })();
+    (function() {
+      var jsonTextElement = document.getElementById('run-circuit-json-pre');
+      revision.latestActiveCommit().subscribe(function(jsonText) {
+        try {
+          var val = JSON.parse(jsonText);
+          jsonTextElement.innerText = JSON.stringify(val, null, '  ');
+        } catch (_) {
+          jsonTextElement.innerText = jsonText;
+        }
+      });
+    })();
+  }
+  return {
+    get initSparkRun() {
+      return initSparkRun;
+    },
+    get obSparkRunsIsShowing() {
+      return obSparkRunsIsShowing;
+    }
+  };
+});
+//# sourceURL=src/ui/sparkrun.js
 ;$traceurRuntime.registerModule("src/ui/title.js", [], function() {
   "use strict";
   var __moduleName = "src/ui/title.js";

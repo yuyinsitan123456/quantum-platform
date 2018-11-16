@@ -2,17 +2,17 @@ import sys
 sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform//quantum')
 import math
 
-class SplitTool:
+class splitTool:
     # 优化链路结构，将单逻辑门和双逻辑门分开
-    def optimizePath(circuit):
+    def optimizePath(self,circuit):
         circuits=[]
         #暂时将原逻辑门返回
         circuits.append(circuit)
         return circuits
 
     # 拆分逻辑链路为上下两部分
-    def splitPathTwo(circuit,qubitNumber):
-        pcircuits=SplitTool.optimizePath(circuit)
+    def splitPathTwo(self,circuit,qubitNumber):
+        pcircuits=self.optimizePath(circuit)
         #按照quibit数量，分为上下两层
         upNum=int(qubitNumber/2)
         downNum=qubitNumber-upNum

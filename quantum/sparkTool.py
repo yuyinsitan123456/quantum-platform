@@ -1,55 +1,24 @@
-import cirq
+import sys
+sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
+from pyspark import SparkConf, SparkContext
+import quantum.quantumCircuitSlit as splitTool
+import quantum.circuitTool as circuitTool
+# build circuit according to the web request
+class sparkTool:
+    def sparkRun(self,circuitList):
+        conf = SparkConf() \
+            .setMaster("spark://192.168.2.200:7077") \
+            .setAppName("quantum") \
+            .set("spark.cores.max", "20")
+        sc = SparkContext(conf=conf)
+        rdd =sc.parallelize(splitTool().splitPathTwo(circuitList,circuitTool().get_qubit_number(circuitList)),2)
+        result=rdd.mapPartitions(self.sendWork).collect()
+        sc.stop()
+        return result
 
-def sendWork(circuitList):
+    def sendWork(self,circuitList):
+        return circuitTool().run(circuitList)
 
-    circuitStr = list()
-    circuitFuc = list()
-    circuitStr.append('X')
-    circuitFuc.append(cirq.X)
-    circuitStr.append('Y')
-    circuitFuc.append(cirq.Y)
-    circuitStr.append('Z')
-    circuitFuc.append(cirq.Z)
-    circuitStr.append('H')
-    circuitFuc.append(cirq.H)
-    circuiMap = zip(circuitStr, circuitFuc)
-    circuitDict = dict((name, value) for name, value in circuiMap)
 
-    def get_qubit_number(cd):
-        l=0
-        for c in cd:
-            if l<len(c):
-                l=len(c)
-        return l
-
-    qubitNumber = get_qubit_number(circuitList)
-    qubits = [cirq.GridQubit(x, 0) for x in range(qubitNumber)]
-
-    # build circuit according to the web request
-    def basic_circuit(cd,qs):
-        for col in cd:
-            count=0
-            pair=0
-            swap=qs[0]
-            monent=list()
-            for gate in col:
-                if gate=='Swap':
-                    if pair==0:
-                        pair+=1
-                        swap=qs[count]
-                    else:
-                        monent.append(cirq.SWAP(swap,qs[count]))
-                elif gate!=1:
-                    monent.append(circuitDict[gate](qs[count]))
-                count += 1
-            yield monent
-        yield [cirq.measure(qs[x], key='q'+str(x)) for x in range(len(qs))]
-
-    circuit=cirq.Circuit()
-    circuit.append(basic_circuit(circuitList,qubits))
-
-    simulator=cirq.google.XmonSimulator()
-    result = simulator.simulate(circuit,qubit_order=qubits)
-    return result.final_state.tolist()
 
 

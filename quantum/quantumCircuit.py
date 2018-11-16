@@ -2,18 +2,16 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for,jsonify
 )
 from werkzeug.exceptions import abort
-from pyspark import SparkConf, SparkContext
+
 import sys
 sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
 
 from quantum.auth import login_required
 from quantum.db import get_db
-import quantum.config as CONFIG
 import json
-import cirq
 import math
-from quantum.quantumCircuitSlit import SplitTool
-from quantum.sparkTool import sendWork
+from quantum.sparkTool import sparkTool
+from quantum.circuitTool import circuitTool
 
 bp = Blueprint('quantumCircuit', __name__)
 
@@ -58,103 +56,20 @@ def get_post(id, check_author=True):
 
     return post
 
-def resultEncode_wave(final_state):
-    names=list()
-    for i in range(len(final_state)):
-        # names.append(str(bin(i))[2:].rjust(math.log(len(final_state),2),'0'))
-        names.append(bin(i))
-    final_state1= list(map(lambda x:x.real ** 2+x.imag ** 2,final_state))
-    resultNDict = dict(('x', value) for value in names)
-    resultPDict = dict(('y', value) for value in final_state1)
-    resultList=list()
-    for i in range(len(final_state)):
-        resultDict={'x':names[i],'y':final_state1[i]}
-        resultList.append(resultDict)
-    resultLists=list()
-    resultLists.append(resultList)
-    return resultLists
-
-def bit_to_str(bits):
-    return ''.join('1' if e else '0' for e in bits)
-
-def resultEncode_prob(result,qubitNumber):
-    frequencies = result.histogram(key='result', fold_func=bit_to_str)
-    state=2**qubitNumber
-    names=list()
-    for i in range(state):
-        # names.append(str(bin(i))[2:].rjust(qnum,'0'))
-        names.append(bin(i))
-    resultList=list()
-    for name in names:
-        resultDict={'x':name,'y':frequencies[name[2:].zfill(qubitNumber)]/CONFIG.REPETITIONS}
-        resultList.append(resultDict)
-    resultLists=list()
-    resultLists.append(resultList)
-    return resultLists
-
-circuitStr=list()
-circuitFuc=list()
-circuitStr.append('X')
-circuitFuc.append(cirq.X)
-circuitStr.append('Y')
-circuitFuc.append(cirq.Y)
-circuitStr.append('Z')
-circuitFuc.append(cirq.Z)
-circuitStr.append('H')
-circuitFuc.append(cirq.H)
-circuiMap = zip(circuitStr, circuitFuc)
-circuitDict=dict((name, value) for name, value in circuiMap)
-
-@bp.route('/run', methods=['GET'])
-def run():
+def preEditData(request):
     data = request.values.get('data', type=str)
-    circuitList=json.loads(data)['cols']
+    circuitList = json.loads(data)['cols']
+    return circuitList
 
-    def get_qubit_number(cd):
-        l=0
-        for c in cd:
-            if l<len(c):
-                l=len(c)
-        return l
+@bp.route('/run', methods=('GET', 'POST'))
+def run():
+    circuitList=preEditData(request)
+    result=circuitTool().run(circuitList)
+    return jsonify(result)
 
-    qubitNumber = get_qubit_number(circuitList)
-    qubits = [cirq.GridQubit(x, 0) for x in range(qubitNumber)]
-
-    # build circuit according to the web request
-    def basic_circuit(cd,qs):
-        for col in cd:
-            count=0
-            pair=0
-            swap=qs[0]
-            monent=list()
-            for gate in col:
-                if gate=='Swap':
-                    if pair==0:
-                        pair+=1
-                        swap=qs[count]
-                    else:
-                        monent.append(cirq.SWAP(swap,qs[count]))
-                elif gate!=1:
-                    monent.append(circuitDict[gate](qs[count]))
-                count += 1
-            yield monent
-        yield cirq.measure(*qs, key='result')
-
-    circuit=cirq.Circuit()
-    circuit.append(basic_circuit(circuitList,qubits))
-    simulator=cirq.google.XmonSimulator()
-    result = simulator.run(circuit,repetitions=CONFIG.REPETITIONS)
-    return jsonify(resultEncode_prob(result,qubitNumber))
-
-@bp.route('/sparkrun', methods=['GET'])
-def sparkWork(circuitLists):
-    # Configure Spark
-    conf = SparkConf() \
-        .setMaster("spark://192.168.2.200:7077") \
-        .setAppName("quantum") \
-        .set("spark.cores.max", "20")
-
-    sc = SparkContext(conf=conf)
-    rdd =sc.parallelize(circuitLists,2)
-    return rdd.mapPartitions(sendWork).collect()
+@bp.route('/sparkrun', methods=('GET', 'POST'))
+def sparkrun():
+    circuitList=preEditData(request)
+    result= sparkTool().sparkRun(circuitList)
+    return jsonify(result)
 
