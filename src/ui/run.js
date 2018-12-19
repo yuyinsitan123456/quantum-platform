@@ -20,18 +20,25 @@ import {fromJsonText_CircuitDefinition} from "src/circuit/Serializer.js"
 const runIsVisible = new ObservableValue(false);
 const obsRunsIsShowing = runIsVisible.observable().whenDifferent();
 
+
 /**
  * @param {!Revision} revision
  * @param {!Observable.<!boolean>} obsIsAnyOverlayShowing
  */
 function initRun(revision, obsIsAnyOverlayShowing) {
-    // Show/hide exports overlay.
+    // send quantum circuit.
     (() => {
         const runButton = /** @type {!HTMLButtonElement} */ document.getElementById('run-button');
         const runOverlay = /** @type {!HTMLDivElement} */ document.getElementById('run-overlay');
         const runDiv = /** @type {HTMLDivElement} */ document.getElementById('run-div');
-        runButton.addEventListener('click', () => runIsVisible.set(true));
-        obsIsAnyOverlayShowing.subscribe(e => { runButton.disabled = e; });
+        runButton.addEventListener('click', () => {
+            $.getJSON("{{ url_for('quantumCircuit.run')}}", {
+                data: document.getElementById('run-circuit-json-pre').innerText
+            }, function(data) {
+                 runIsVisible.set(true);
+            });
+        });
+        obsIsAnyOverlayShowing.subscribe(e => runButton.disabled = e );
         runOverlay.addEventListener('click', () => runIsVisible.set(false));
         document.addEventListener('keydown', e => {
             const ESC_KEY = 27;
@@ -43,7 +50,7 @@ function initRun(revision, obsIsAnyOverlayShowing) {
             runDiv.style.display = showing ? 'block' : 'none';
         });
     })();
-    // Export JSON.
+    // copy JSON.
     (() => {
         const jsonTextElement = /** @type {HTMLPreElement} */ document.getElementById('run-circuit-json-pre');
         revision.latestActiveCommit().subscribe(jsonText => {

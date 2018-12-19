@@ -105,20 +105,21 @@
         <script>
           document.getElementById('noscript-div').style.display = 'none';
         </script>
-
+        <script type=text/javascript src="{{url_for('static', filename='jquery.js') }}">
+        </script>
         <script>
           document.getElementById('noscript-div').style.display = 'block';
           //noinspection InnerHTMLJS
           document.QUIRK_QUINE_ALL_HTML_ORIGINAL = '<!'+'DOCTYPE html>\n<'+'html>\n    ' +
                   document.documentElement.innerHTML + '\n<' + '/html>';
           document.getElementById('noscript-div').style.display = 'none';
-//DEFAULT_CIRCUIT_START
-document.DEFAULT_CIRCUIT = undefined;
-//DEFAULT_CIRCUIT_END
+          //DEFAULT_CIRCUIT_START
+        document.DEFAULT_CIRCUIT = undefined;
+        //DEFAULT_CIRCUIT_END
 
-// UN-MINIFIED SOURCE IS AVAILABLE FROM github.com/Strilanc/Quirk
+        // UN-MINIFIED SOURCE IS AVAILABLE FROM github.com/Strilanc/Quirk
 
-<!-- INCLUDE SOURCE PART -->
+        <!-- INCLUDE SOURCE PART -->
 
         </script>
     </body>

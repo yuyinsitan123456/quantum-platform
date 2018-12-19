@@ -1,11 +1,11 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for,jsonify
 )
 from werkzeug.exceptions import abort
 
 from quantum.auth import login_required
 from quantum.db import get_db
-
+import json
 import cirq
 
 bp = Blueprint('quantumCircuit', __name__)
@@ -50,22 +50,72 @@ def get_post(id, check_author=True):
 
     return post
 
-@bp.route('/run')
+def resultEncode(final_state):
+    names=list()
+    for i in range(len(final_state)):
+        names.append(str(bin(i)))
+    final_state1=map(lambda x:{'real':x.real,'imag':x.imag},final_state)
+    resultmap = zip(names, final_state1)
+    resultDict = dict((name, value) for name, value in resultmap)
+    return resultDict
+
+circuitStr=list()
+circuitFuc=list()
+circuitStr.append('X')
+circuitFuc.append(cirq.X)
+circuitStr.append('Y')
+circuitFuc.append(cirq.Y)
+circuitStr.append('Z')
+circuitFuc.append(cirq.Z)
+circuitStr.append('H')
+circuitFuc.append(cirq.H)
+circuiMap = zip(circuitStr, circuitFuc)
+circuitDict=dict((name, value) for name, value in circuiMap)
+
+@bp.route('/run', methods=['GET'])
 def run():
-    # Pick a qubit.
-    qubit = cirq.GridQubit(0, 0)
+    data = request.values.get('data', type=str)
+    circuitList=json.loads(data)['cols']
+    print(circuitList)
 
-    # Create a circuit
-    circuit = cirq.Circuit.from_ops(
-        cirq.X(qubit)**0.5,  # Square root of NOT.
-        cirq.measure(qubit, key='m')  # Measurement.
-    )
-    print("Circuit:")
-    print(circuit)
+    def get_qubit_number(cd):
+        l=0
+        for c in cd:
+            if l<len(c):
+                l=len(c)
+        return l
 
-    # Simulate the circuit several times.
-    simulator = cirq.google.XmonSimulator()
-    result = simulator.run(circuit, repetitions=20)
+    qubitNumber = get_qubit_number(circuitList)
+    qubits = [cirq.GridQubit(x, y) for x in range(qubitNumber) for y in range(qubitNumber)]
+
+    # build circuit according to the web request
+    def basic_circuit(cd,qs):
+        for col in cd:
+            count=0
+            pair=0
+            swap=qs[0]
+            monent=list()
+            for gate in col:
+                if gate==1:
+                    count += 1
+                elif gate=='Swap':
+                    if pair==0:
+                        pair+=1
+                        swap=qs[count]
+                    else:
+                        monent.append(cirq.SWAP(swap,qs[count]))
+                else:
+                    monent.append(circuitDict[gate](qs[count]))
+            yield monent
+        yield [cirq.measure(qs[x], key='q'+str(x)) for x in range(len(qs))]
+
+    circuit=cirq.Circuit()
+    circuit.append(basic_circuit(circuitList,qubits))
+    simulator=cirq.google.XmonSimulator()
+    result = simulator.simulate(circuit,qubit_order=qubits)
     print("Results:")
-    print(result)
-    return render_template('quantumCircuit/result.html', circuit=circuit, result=result)
+    print(resultEncode(result.final_state.tolist()))
+    return jsonify(result=resultEncode(result.final_state.tolist()))
+
+
+
