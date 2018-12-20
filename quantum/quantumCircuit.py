@@ -76,7 +76,6 @@ circuitDict=dict((name, value) for name, value in circuiMap)
 def run():
     data = request.values.get('data', type=str)
     circuitList=json.loads(data)['cols']
-    print(circuitList)
 
     def get_qubit_number(cd):
         l=0
@@ -86,7 +85,7 @@ def run():
         return l
 
     qubitNumber = get_qubit_number(circuitList)
-    qubits = [cirq.GridQubit(x, y) for x in range(qubitNumber) for y in range(qubitNumber)]
+    qubits = [cirq.GridQubit(x, 0) for x in range(qubitNumber)]
 
     # build circuit according to the web request
     def basic_circuit(cd,qs):
@@ -113,8 +112,6 @@ def run():
     circuit.append(basic_circuit(circuitList,qubits))
     simulator=cirq.google.XmonSimulator()
     result = simulator.simulate(circuit,qubit_order=qubits)
-    print("Results:")
-    print(resultEncode(result.final_state.tolist()))
     return jsonify(result=resultEncode(result.final_state.tolist()))
 
 

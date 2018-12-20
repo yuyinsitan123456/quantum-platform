@@ -36,6 +36,7 @@ function initRun(revision, obsIsAnyOverlayShowing) {
                 data: document.getElementById('run-circuit-json-pre').innerText
             }, function(data) {
                  runIsVisible.set(true);
+                 document.getElementById('run-circuit-json-show').innerText=JSON.stringify(data);
             });
         });
         obsIsAnyOverlayShowing.subscribe(e => runButton.disabled = e );
