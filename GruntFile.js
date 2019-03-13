@@ -123,16 +123,16 @@ module.exports = function(grunt) {
                 dest: 'out/test_perf.js'
             }
         },
-        uglify: {
-            'uglify-concatenated-src': {
-                options: {
-                    maxLineLen: 128
-                },
-                files: {
-                    'out/tmp/minified-src.js': ['out/tmp/concatenated-src.js']
-                }
-            }
-        },
+        // uglify: {
+        //     'uglify-concatenated-src': {
+        //         options: {
+        //             maxLineLen: 128
+        //         },
+        //         files: {
+        //             'out/tmp/minified-src.js': ['out/tmp/concatenated-src.js']
+        //         }
+        //     }
+        // },
         include_file: {
             options: {
                 src: ['html/quirk.template.html'],
@@ -183,7 +183,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    // grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-traceur');
 
@@ -192,8 +192,8 @@ module.exports = function(grunt) {
         'traceur:translate-src',
         'bootstrap-get-packages:src/main.js:out/tmp/traceur/bootstrap_post_src/run_main.js',
         'concat:concat-traceur-src',
-        'uglify:uglify-concatenated-src',
-        'inject-js-into-html:html/quirk.template.html:out/tmp/minified-src.js:quantum/templates/quantumCircuit/quirk.html',
+        // 'uglify:uglify-concatenated-src',
+        'inject-js-into-html:html/quirk.template.html:out/tmp/concatenated-src.js:quantum/templates/quantumCircuit/quirk.html',
         'clean:clean-tmp'
     ]);
     grunt.registerTask('build-debug', [

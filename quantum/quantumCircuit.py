@@ -7,6 +7,8 @@ from quantum.auth import login_required
 from quantum.db import get_db
 import json
 import cirq
+import math
+from quantum.quantumCircuitSlit import SplitTool
 
 bp = Blueprint('quantumCircuit', __name__)
 
@@ -53,11 +55,18 @@ def get_post(id, check_author=True):
 def resultEncode(final_state):
     names=list()
     for i in range(len(final_state)):
-        names.append(str(bin(i)))
-    final_state1=map(lambda x:{'real':x.real,'imag':x.imag},final_state)
-    resultmap = zip(names, final_state1)
-    resultDict = dict((name, value) for name, value in resultmap)
-    return resultDict
+        # names.append(str(bin(i))[2:].rjust(math.log(len(final_state),2),'0'))
+        names.append(bin(i))
+    final_state1= list(map(lambda x:x.real ** 2+x.imag ** 2,final_state))
+    resultNDict = dict(('x', value) for value in names)
+    resultPDict = dict(('y', value) for value in final_state1)
+    resultList=list()
+    for i in range(len(final_state)):
+        resultDict={'x':names[i],'y':final_state1[i]}
+        resultList.append(resultDict)
+    resultLists=list()
+    resultLists.append(resultList)
+    return resultLists
 
 circuitStr=list()
 circuitFuc=list()
@@ -87,6 +96,8 @@ def run():
     qubitNumber = get_qubit_number(circuitList)
     qubits = [cirq.GridQubit(x, 0) for x in range(qubitNumber)]
 
+    print(SplitTool.splitPathTwo(circuitList,qubitNumber))
+
     # build circuit according to the web request
     def basic_circuit(cd,qs):
         for col in cd:
@@ -112,7 +123,7 @@ def run():
     circuit.append(basic_circuit(circuitList,qubits))
     simulator=cirq.google.XmonSimulator()
     result = simulator.simulate(circuit,qubit_order=qubits)
-    return jsonify(result=resultEncode(result.final_state.tolist()))
+    return jsonify(resultEncode(result.final_state.tolist()))
 
 
 
