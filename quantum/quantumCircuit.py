@@ -114,8 +114,10 @@ def run():
                         swap=qs[count]
                     else:
                         monent.append(cirq.SWAP(swap,qs[count]))
+                    count += 1
                 else:
                     monent.append(circuitDict[gate](qs[count]))
+                    count += 1
             yield monent
         yield [cirq.measure(qs[x], key='q'+str(x)) for x in range(len(qs))]
 
