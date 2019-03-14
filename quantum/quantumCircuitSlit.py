@@ -79,7 +79,8 @@ class SplitTool:
                 partitionCircuitUs.append(partitionCircuitU)
                 partitionCircuitDs.append(partitionCircuitD)
                 currentDep += 1
-            partitionCircuits.append(partitionCircuitUs+partitionCircuitDs)
+            partitionCircuits.append(partitionCircuitUs)
+            partitionCircuits.append(partitionCircuitDs)
         return partitionCircuits
 
 
