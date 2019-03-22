@@ -2,6 +2,8 @@ import os
 
 from flask import Flask
 
+import sys
+sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
@@ -26,8 +28,8 @@ def create_app(test_config=None):
         pass
 
     # apply the blueprints to the app
-    from quantum import quantumCircuit
     from quantum import auth
+    from quantum import quantumCircuit
     app.register_blueprint(auth.bp)
     app.register_blueprint(quantumCircuit.bp)
 

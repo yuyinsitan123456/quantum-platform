@@ -3,6 +3,9 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
+import sys
+sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
+
 from quantum.auth import login_required
 from quantum.db import get_db
 import json
@@ -17,12 +20,13 @@ bp = Blueprint('quantumCircuit', __name__)
 def index():
     """Show all the posts, most recent first."""
     db = get_db()
-    posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
-    ).fetchall()
-    return render_template('quantumCircuit/quirk.html', posts=posts)
+    # posts = db.execute(
+    #     'SELECT p.id, title, body, created, author_id, username'
+    #     ' FROM post p JOIN user u ON p.author_id = u.id'
+    #     ' ORDER BY created DESC'
+    # ).fetchall()
+    # return render_template('quantumCircuit/quirk.html', posts=posts)
+    return render_template('quantumCircuit/quirk.html')
 
 
 def get_post(id, check_author=True):

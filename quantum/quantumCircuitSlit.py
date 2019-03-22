@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform//quantum')
 import math
 
 class SplitTool:

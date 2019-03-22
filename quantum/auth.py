@@ -5,6 +5,9 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import sys
+sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
+
 from quantum.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
