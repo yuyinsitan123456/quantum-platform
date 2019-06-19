@@ -348,7 +348,7 @@ class DisplayedTimeLine {
             this._drawColumn(painter, this.circuitDefinition.columns[col], col, hand, stats);
         }
 
-        if (!forTooltip) {
+        if (forTooltip) {
             this._drawOutputDisplays(painter, stats, hand);
             this._drawHintLabels(painter, stats);
         }

@@ -1,5 +1,4 @@
-import sys
-sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
+
 from quantum import create_app
 
 app=create_app()

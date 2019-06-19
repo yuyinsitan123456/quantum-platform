@@ -31,12 +31,13 @@ Config.MIN_COL_COUNT = 5;
 Config.URL_CIRCUIT_PARAM_KEY = 'circuit';
 
 // Gate background colors.
-Config.GATE_FILL_COLOR = 'white';
-Config.HIGHLIGHTED_GATE_FILL_COLOR = '#FB7';
-Config.TIME_DEPENDENT_HIGHLIGHT_COLOR = '#FFC';
+//#FFC8B4
+Config.GATE_FILL_COLOR = '#77DDFF';//(门颜色)
+Config.HIGHLIGHTED_GATE_FILL_COLOR = '#FFC';//(选中后门颜色)
+Config.TIME_DEPENDENT_HIGHLIGHT_COLOR = '#FFC8B4';
 
 // Mixed-state displays are green.
-Config.DISPLAY_GATE_IN_TOOLBOX_FILL_COLOR = '#4F4';
+Config.DISPLAY_GATE_IN_TOOLBOX_FILL_COLOR = '#5599FF';
 Config.DISPLAY_GATE_BACK_COLOR = '#EFE';
 Config.DISPLAY_GATE_FORE_COLOR = '#3F3';
 

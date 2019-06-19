@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+import {Config} from "src/Config.js"
 import {Gate, GateBuilder} from "src/circuit/Gate.js"
 import {GatePainting} from "src/draw/GatePainting.js"
 import {Matrix} from "src/math/Matrix.js"
@@ -76,6 +76,7 @@ HalfTurnGates.X = new GateBuilder().
     setTitle("Pauli X Gate").
     setBlurb("The NOT gate.\nToggles between ON and OFF.").
     setActualEffectToShaderProvider(ctx => xShader.withArgs(...ketArgs(ctx))).
+    setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)). //改变门的颜色
     setKnownEffectToMatrix(Matrix.PAULI_X).
     gate;
 
@@ -86,6 +87,7 @@ HalfTurnGates.Y = new GateBuilder().
     setTitle("Pauli Y Gate").
     setBlurb("A combination of the X and Z gates.").
     setActualEffectToShaderProvider(ctx => yShader.withArgs(...ketArgs(ctx))).
+    setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)). //改变门的颜色
     setKnownEffectToMatrix(Matrix.PAULI_Y).
     gate;
 
@@ -95,6 +97,7 @@ HalfTurnGates.Z = new GateBuilder().
     setSerializedIdAndSymbol("Z").
     setTitle("Pauli Z Gate").
     setBlurb("The phase flip gate.\nNegates phases when the qubit is ON.").
+    setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)). //改变门的颜色
     setActualEffectToShaderProvider(ctx => zShader.withArgs(...ketArgs(ctx))).
     setKnownEffectToMatrix(Matrix.PAULI_Z).
     gate;
@@ -108,6 +111,7 @@ HalfTurnGates.H = new GateBuilder().
         "Maps ON to ON + OFF.\n" +
         "Maps OFF to ON - OFF.").
     setActualEffectToShaderProvider(ctx => hShader.withArgs(...ketArgs(ctx))).
+    setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)). //改变门的颜色
     setKnownEffectToMatrix(Matrix.HADAMARD).
     gate;
 

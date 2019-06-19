@@ -70,7 +70,7 @@ Gates.Special = {
  * (In reality these would require multiple runs of the circuit to do tomography.)
  */
 Gates.Displays = {
-    AmplitudeDisplayFamily: AmplitudeDisplayFamily,
+//    AmplitudeDisplayFamily: AmplitudeDisplayFamily,
     ProbabilityDisplayFamily: ProbabilityDisplayFamily,
     SampleDisplayFamily: SampleDisplayFamily,
     DensityMatrixDisplayFamily: DensityMatrixDisplayFamily,
@@ -176,13 +176,68 @@ Gates.findKnownGateById = (id, customGateSet) => {
 /** @type {!Array<!{hint: !string, gates: !Array<undefined|!Gate>}>} */
 Gates.TopToolboxGroups = [
 
+
     {
-        hint: "Half Turns",
+        hint: "多比特门",
         gates: [
-            HalfTurnGates.Z, SwapGateHalf,
-            HalfTurnGates.Y, undefined,
-            HalfTurnGates.X, HalfTurnGates.H
+            SwapGateHalf, Controls.Control
+
         ]
+    },
+
+    {
+        hint: "二分之一门",
+        gates: [
+            HalfTurnGates.X,HalfTurnGates.Z,HalfTurnGates.Y,
+            HalfTurnGates.H
+
+        ]
+    },
+
+    {
+
+        hint: "四分之一门",
+
+        gates: [
+
+            QuarterTurnGates.SqrtZForward, QuarterTurnGates.SqrtZBackward,QuarterTurnGates.SqrtYForward,
+
+            QuarterTurnGates.SqrtYBackward, QuarterTurnGates.SqrtXForward, QuarterTurnGates.SqrtXBackward
+
+        ]
+
+    },
+
+    {
+
+        hint: "八分之一门",
+
+        gates: [
+
+            VariousZGates.Z4, VariousZGates.Z4i,
+
+            VariousYGates.Y4, VariousYGates.Y4i,
+
+            VariousXGates.X4, VariousXGates.X4i,
+
+        ]
+
+    },
+
+    {
+
+        hint: "十六分之一门",
+
+        gates: [
+
+            VariousZGates.Z8,  VariousZGates.Z8i,
+
+            VariousYGates.Y8,  VariousYGates.Y8i,
+
+            VariousXGates.X8,  VariousXGates.X8i,
+
+        ]
+
     }
 ];
 

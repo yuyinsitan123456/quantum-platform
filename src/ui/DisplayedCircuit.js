@@ -340,6 +340,7 @@ class DisplayedCircuit {
      * @param {!boolean} showWires
      */
     paint(painter, hand, stats, forTooltip=false, showWires=true) {
+    //画线
         if (showWires) {
             this._drawWires(painter, !forTooltip);
         }
@@ -347,8 +348,8 @@ class DisplayedCircuit {
         for (let col = 0; col < this.circuitDefinition.columns.length; col++) {
             this._drawColumn(painter, this.circuitDefinition.columns[col], col, hand, stats);
         }
-
-        if (!forTooltip) {
+    //控制运算结果显示1
+        if (forTooltip) {
             this._drawOutputDisplays(painter, stats, hand);
             this._drawHintLabels(painter, stats);
         }
@@ -367,7 +368,7 @@ class DisplayedCircuit {
             for (let row = 0; row < drawnWireCount; row++) {
                 let wireRect = this.wireRect(row);
                 let y = wireRect.center().y;
-                painter.print('|0⟩', 20, y, 'right', 'middle', 'black', '14px sans-serif', 20, Config.WIRE_SPACING);
+                painter.print('Q|'+row+'⟩', 30, y, 'right', 'middle', 'black', '30px sans-serif', 30, Config.WIRE_SPACING);//比特数量
             }
         }
 
@@ -380,7 +381,7 @@ class DisplayedCircuit {
             painter.trace(trace => {
                 let wireRect = this.wireRect(row);
                 let y = Math.round(wireRect.center().y - 0.5) + 0.5;
-                let lastX = showLabels ? 25 : 5;
+                let lastX = showLabels ? 30 : 5;
                 //noinspection ForLoopThatDoesntUseLoopVariableJS
                 for (let col = 0;
                         showLabels ? lastX < painter.canvas.width : col <= this.circuitDefinition.columns.length;
@@ -396,7 +397,7 @@ class DisplayedCircuit {
                     }
                     lastX = x;
                 }
-            }).thenStroke('black');
+            }).thenStroke('red');
         }
         painter.ctx.restore();
         if (this._extraWireStartIndex !== undefined && this.circuitDefinition.numWires === Config.MAX_WIRE_COUNT) {

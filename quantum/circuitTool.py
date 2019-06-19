@@ -1,9 +1,9 @@
-import sys
-sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform//quantum')
+
 import math
 import cirq
+import numpy as np
 import quantum.config as CONFIG
-
+from quantum.SingleQubitMatrixGate import SelfSingleQubitMatrixGate
 class circuitTool:
     def resultEncode_wave(self,final_state):
         names = list()
@@ -33,7 +33,7 @@ class circuitTool:
             names.append(bin(i))
         resultList = list()
         for name in names:
-            resultDict = {'x': name, 'y': frequencies[name[2:].zfill(qubitNumber)] / CONFIG.REPETITIONS}
+            resultDict = {'x': name[2:].zfill(qubitNumber), 'y': frequencies[name[2:].zfill(qubitNumber)] / CONFIG.REPETITIONS}
             resultList.append(resultDict)
         resultLists = list()
         resultLists.append(resultList)
@@ -58,35 +58,88 @@ class circuitTool:
         circuitFuc.append(cirq.Z)
         circuitStr.append('H')
         circuitFuc.append(cirq.H)
+        circuitStr.append('Z^½')
+        circuitFuc.append(cirq.Z**(1/2))
+        circuitStr.append('Z^¼')
+        circuitFuc.append(cirq.Z ** (1 / 4))
+        circuitStr.append('Z^⅛')
+        circuitFuc.append(cirq.Z ** (1 / 8))
+        circuitStr.append('Z^-½')
+        circuitFuc.append(cirq.Z ** (-1 / 2))
+        circuitStr.append('Z^-¼')
+        circuitFuc.append(cirq.Z ** (-1 / 4))
+        circuitStr.append('Z^-⅛')
+        circuitFuc.append(cirq.Z ** (-1 / 8))
+        circuitStr.append('X^½')
+        circuitFuc.append(cirq.X ** (1 / 2))
+        circuitStr.append('X^¼')
+        circuitFuc.append(cirq.X ** (1 / 4))
+        circuitStr.append('X^⅛')
+        circuitFuc.append(cirq.X ** (1 / 8))
+        circuitStr.append('X^-½')
+        circuitFuc.append(cirq.X ** (-1 / 2))
+        circuitStr.append('X^-¼')
+        circuitFuc.append(cirq.X ** (-1 / 4))
+        circuitStr.append('X^-⅛')
+        circuitFuc.append(cirq.X ** (-1 / 8))
+        circuitStr.append('Y^½')
+        circuitFuc.append(cirq.Y ** (1 / 2))
+        circuitStr.append('Y^¼')
+        circuitFuc.append(cirq.Y ** (1 / 4))
+        circuitStr.append('Y^⅛')
+        circuitFuc.append(cirq.Y ** (1 / 8))
+        circuitStr.append('Y^-½')
+        circuitFuc.append(cirq.Y ** (-1 / 2))
+        circuitStr.append('Y^-¼')
+        circuitFuc.append(cirq.Y ** (-1 / 4))
+        circuitStr.append('Y^-⅛')
+        circuitFuc.append(cirq.Y ** (-1 / 8))
+        circuitStr.append('P0')
+        circuitFuc.append(SelfSingleQubitMatrixGate(np.array([[1,0],[0,0]])))
+        circuitStr.append('P1')
+        circuitFuc.append(SelfSingleQubitMatrixGate(np.array([[0,0],[0,1]])))
         circuiMap = zip(circuitStr, circuitFuc)
         circuitDict = dict((name, value) for name, value in circuiMap)
         return circuitDict
 
-    def basic_circuit(self,cd, qs):
-        circuitDict=self.getCircuitDict()
+    def basic_circuit(self, cd, qs):
+        circuitDict = self.getCircuitDict()
         for col in cd:
             count = 0
-            pairswap = 0
             paircnot = 0
-            swap = qs[0]
-            cont = qs[0]
+            swap = list()
+            cont = list()
+            gates = list()
             monent = list()
             for gate in col:
                 if gate == 'Swap':
-                    if pairswap == 0:
-                        pairswap += 1
-                        swap = qs[count]
-                    else:
-                        monent.append(cirq.SWAP(swap, qs[count]))
+                    swap.append(qs[count])
                 elif gate == '•':
                     if paircnot == 0:
                         paircnot += 1
-                        cont = qs[count]
-                    else:
-                        monent.append(cirq.CNOT(cont, qs[count]))
-                elif gate != 1:
-                    monent.append(circuitDict[gate](qs[count]))
+                        cont.append(qs[count])
+                    elif paircnot == 1:
+                        paircnot += 1
+                        cont.append(qs[count])
+                elif gate != 1 :
+                    gates.append((gate,qs[count]))
                 count += 1
+            if len(swap) > 0:
+                monent.append(cirq.SWAP(swap[0], swap[1]))
+                if len(gates) > 0:
+                    for (gateType,gatePosition) in gates:
+                        monent.append(circuitDict[gateType](gatePosition))
+            if len(cont) > 0:
+                if len(cont)==1:
+                    if gates[0][0]=='X':
+                        monent.append(cirq.CNOT(cont[0],gates[0][1]))
+                    if gates[0][0] == 'Z':
+                        monent.append(cirq.CZ(cont[0],gates[0][1]))
+                if len(cont) == 2:
+                    monent.append(cirq.TOFFOLI(cont[0],cont[1], gates[0][1]))
+            if len(cont) == 0 and len(swap) == 0:
+                for (gateType, gatePosition) in gates:
+                    monent.append(circuitDict[gateType](gatePosition))
             yield monent
         yield cirq.measure(*qs, key='result')
 

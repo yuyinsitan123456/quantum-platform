@@ -37,7 +37,7 @@ class DisplayedInspector {
         /** @type {!DisplayedCircuit} */
         this.displayedCircuit = circuitWidget;
         /** @type {!DisplayedToolbox} */
-        this.displayedToolboxTop = displayedToolboxTop;
+        this.displayedToolboxTop = displayedToolboxTop.withCustomGatesInserted(circuitWidget.circuitDefinition.customGateSet);
         /** @type {!DisplayedToolbox} */
         // this.displayedToolboxBottom = displayedToolboxBottom.
         //     withCustomGatesInserted(circuitWidget.circuitDefinition.customGateSet);
@@ -73,7 +73,7 @@ class DisplayedInspector {
      * @returns {!DisplayedInspector}
      */
     static empty(drawArea) {
-        let topToolbox = new DisplayedToolbox('Toolbox', 0, Gates.TopToolboxGroups, true, 3);
+        let topToolbox = new DisplayedToolbox(' ', 0, Gates.TopToolboxGroups, true, 3);
         let displayedCircuit = DisplayedCircuit.empty(topToolbox.desiredHeight());
         // let bottomToolbox = new DisplayedToolbox(
         //     'Toolbox₂',
@@ -100,7 +100,7 @@ class DisplayedInspector {
         // this.displayedToolboxBottom.paint(painter, stats, this.hand);
         this.displayedCircuit.paint(painter, this.hand, stats);
         this._paintHand(painter, stats);
-        this._drawHint(painter);
+//        this._drawHint(painter);
     }
 
     /**

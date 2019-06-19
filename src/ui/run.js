@@ -40,10 +40,10 @@ function initRun(revision, obsIsAnyOverlayShowing) {
                 runIsVisible.set(true);
 
                 document.getElementById('run-circuit-json-show').innerText = JSON.stringify(data);
-                xDomain = 0;
-                yDomain = 0;
-                yDomainMin = 0;
-                xDomainMin = 0;
+//                xDomain = 0;
+//                yDomain = 0;
+//                yDomainMin = 0;
+//                xDomainMin = 0;
 
                 if (Array.isArray(data)) {
                     updateChart(data);

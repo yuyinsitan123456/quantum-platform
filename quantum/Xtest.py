@@ -3,7 +3,7 @@ import numpy as np
 def Xtest():
     # Configure Spark
     conf = SparkConf() \
-        .setMaster("spark://192.168.2.200:7077") \
+        .setMaster("spark://192.168.2.221:7077") \
         .setAppName("quantum") \
         .set("spark.cores.max", "20")\
 

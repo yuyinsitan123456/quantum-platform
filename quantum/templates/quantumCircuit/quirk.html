@@ -3,44 +3,39 @@
     <head lang="en">
         <meta charset="UTF-8">
         <meta name="keywords" content="quantum,circuit,simulator,quirk">
-        <meta name="description" content="Quirk is an open-source drag-and-drop quantum circuit simulator for exploring and understanding small quantum circuits.">
-        <title>Quirk: Quantum Circuit Simulator</title>
+        <title>量子模拟前端</title>
 
         <!-- Whatever is between these start/end analytic tags is stripped by the 'downloading offline copy' code. -->
         <!-- Start Analytics -->
         <!-- End Analytics -->
     </head>
     <body style="margin: 0">
-        <ul>
-    {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">退出</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">注册</a>
-      <li><a href="{{ url_for('auth.login') }}">登陆</a>
-    {% endif %}
+        <ul style="text-align:center">
+<!--    {% if g.user %}-->
+<!--      <li><span>{{ g.user['username'] }}</span>-->
+<!--      <li><a href="{{ url_for('auth.logout') }}">退出</a>-->
+<!--    {% else %}-->
+<!--      <li><a href="{{ url_for('auth.register') }}">注册</a>-->
+<!--      <li><a href="{{ url_for('auth.login') }}">登陆</a>-->
+<!--    {% endif %}-->
+            <h1 style="text-align:center">中国电子科技集团公司第32研究所量子计算实验室</h1>
         </ul>
+
         <!-- Primary content -->
         <div id="inspectorDiv" style="display: none">
             <!-- Buttons -->
             <div style="margin: 5px;">
                 &nbsp;
-                &nbsp;
-                &nbsp;
-                &nbsp;
-                <button id="clear-circuit-button" style="min-width: 50px; min-height: 30px;">清除线路</button>
-                <button id="clear-all-button" style="min-width: 50px; min-height: 30px;">清除所有</button>
-                &nbsp;
-                &nbsp;
-                <button id="undo-button" style="min-width: 50px; min-height: 30px;">撤销</button>
-                <button id="redo-button" style="min-width: 50px; min-height: 30px;">恢复</button>
-                <button id="run-button" style="min-width: 50px; min-height: 30px;" >运行</button>
-                <button id="sparkrun-button" style="min-width: 50px; min-height: 30px;" >分布式运行</button>
-                &nbsp;
-                &nbsp;
 
+                <button id="clear-circuit-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;">清除线路</button>
+                <button id="clear-all-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;">清除所有</button>
                 &nbsp;
-
+                <button id="undo-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;">撤销</button>
+                <button id="redo-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;">恢复</button>
+                <button id="gate-forge-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;">创建任意转角门</button>
+                <button id="run-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;" >运行</button>
+                <button id="sparkrun-button" style="min-width: 50px; min-height: 50px;background-color: #99FF99;" >分布式运行</button>
+                &nbsp;
             </div>
 
             <!-- Circuit drawing area -->
@@ -48,267 +43,249 @@
                 <canvas id="drawCanvas"></canvas>
             </div>
 
-            
-<style>
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
-
-  path.line {
-    fill: none;
-    stroke-width: 1px;
-    pointer-events: none;
-  }
-
-  .zoomOut {
-    fill: #66a;
-    cursor: pointer;
-  }
-
-  .zoomOutText {
-    pointer-events: none;
-    fill: #ccc;
-  }
-
-  .zoomOverlay {
-    pointer-events: all;
-    fill: none;
-  }
-
-  .band {
-    fill: none;
-    stroke-width: 2px;
-    stroke: black;
-  }
-
+            <style>
+        *{
+            overflow:auto;
+            margin: 0;
+            padding: 0;
+        }
+        #graph{
+            overflow:auto;
+            max-width:700px;
+            max-height:2000px;
+            padding:5px;
+            margin:2px;
+        }
+        .tooltip{
+            position: absolute;
+            width: auto;
+            height: auto;
+            background: rgba(0,0,0,.4);
+            font-family: "MicroSoft YaHei";
+            color: #ffffff;
+            padding: 0.5%;
+            border-radius: 5px;
+            display: none;
+        }
 </style>
 <script type=text/javascript src="{{url_for('static', filename='d3.js') }}"></script>
 <div id="run-div" style="display:none;">
     <div id="run-overlay" style="position:fixed; left: 0; top: 0; height: 1000vh; width: 1000vw; background: rgba(0, 0, 0,0.7);">
     </div>
-    <div style="position: absolute; top: 20px; left: 50px; padding: 20px; background-color: white; border: 1px solid black;overflow:auto; max-width:6000px; max-height:10000px;">
-        <div style="margin: 10px 0 0 20px;">
-            <pre tabindex="104" id="run-circuit-json-pre" style="display:none;overflow:auto; max-width:600px; max-height:600px; border: 1px solid black; padding:5px; margin:2px;"></pre>
-            <pre tabindex="104" id="run-circuit-json-show" style="overflow:auto; max-width:600px; max-height:10000px; border: 1px solid black; padding:5px; margin:2px;"></pre>
-            <button onClick="zoomOut()"> Zoom Out </button>
+    <div style="position: absolute; top: 20px; left: 50px; padding: 20px; background-color: white; border: 1px solid black;overflow:auto; max-width:1000px; max-height:1000px;">
+        <div>
+            <pre tabindex="104" id="run-circuit-json-pre" style="display:none;overflow:auto; max-width:1000px; max-height:1000px; border: 1px solid black; padding:5px; margin:2px;"></pre>
+            <pre tabindex="104" id="run-circuit-json-show" style="overflow:auto; max-width:1000px; max-height:10000px; border: 1px solid black; padding:5px; margin:2px;"></pre>
             <div id="graph"></div>
         </div>
     </div>
 </div>
 <script>
-var bandPos = [-1, -1];
-var pos;
-var colors = d3.scaleOrdinal(d3.schemeCategory10);
-
-//initialized when data is pulled
-var x, y, xDomain, yDomain, xDomainMin, yDomainMin, xAxis, yAxis, zoomArea, line;
-xDomain = 0;
-yDomain = 0;
-xDomainMin = 0;
-yDomainMin = 0;
-
-var margin = {
-    top: 40,
-    right: 40,
-    bottom: 50,
-    left: 60
-}
-var width = 900 - margin.left - margin.right;
-var height = 450 - margin.top - margin.bottom;
-var drag = d3.drag();
-
-var svg = d3.select("#graph").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-svg.append("clipPath")
-    .attr("id", "clip")
-    .append("rect")
-    .attr("width", width)
-    .attr("height", height);
-
-var zoomOverlay = svg.append("rect")
-    .attr("width", width - 10)
-    .attr("height", height)
-    .attr("class", "zoomOverlay")
-    .call(drag);
-
-
-var band = svg.append("rect")
-    .attr("width", 0)
-    .attr("height", 0)
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("class", "band");
-
-var zoomout = svg.append("g");
-
-drag.on("end", function () {
-    var pos = d3.mouse(this);
-    var x1 = x.invert(bandPos[0]);
-    var x2 = x.invert(pos[0]);
-
-    if (x1 < x2) {
-        zoomArea.x1 = x1;
-        zoomArea.x2 = x2;
-    } else {
-        zoomArea.x1 = x2;
-        zoomArea.x2 = x1;
-    }
-
-    var y1 = y.invert(pos[1]);
-    var y2 = y.invert(bandPos[1]);
-
-    if (x1 < x2) {
-        zoomArea.y1 = y1;
-        zoomArea.y2 = y2;
-    } else {
-        zoomArea.y1 = y2;
-        zoomArea.y2 = y1;
-    }
-
-    bandPos = [-1, -1];
-
-    d3.select(".band").transition()
-        .attr("width", 0)
-        .attr("height", 0)
-        .attr("x", bandPos[0])
-        .attr("y", bandPos[1]);
-
-    zoom();
-
-});
-
-drag.on("drag", function () {
-
-    var pos = d3.mouse(this);
-
-    if (pos[0] < bandPos[0]) {
-        d3.select(".band").attr("transform", "translate(" + (pos[0]) + "," + bandPos[1] + ")");
-    }
-    if (pos[1] < bandPos[1]) {
-        d3.select(".band").attr("transform", "translate(" + (pos[0]) + "," + pos[1] + ")");
-    }
-    if (pos[1] < bandPos[1] && pos[0] > bandPos[0]) {
-        d3.select(".band").attr("transform", "translate(" + (bandPos[0]) + "," + pos[1] + ")");
-    }
-
-    //set new position of band when user initializes drag
-    if (bandPos[0] == -1) {
-        bandPos = pos;
-        d3.select(".band").attr("transform", "translate(" + bandPos[0] + "," + bandPos[1] + ")");
-    }
-
-    d3.select(".band").transition().duration(1)
-        .attr("width", Math.abs(bandPos[0] - pos[0]))
-        .attr("height", Math.abs(bandPos[1] - pos[1]));
-});
-
-function zoom() {
-    //recalculate domains
-    if (zoomArea.x1 > zoomArea.x2) {
-        x.domain([zoomArea.x2, zoomArea.x1]);
-    } else {
-        x.domain([zoomArea.x1, zoomArea.x2]);
-    }
-
-    if (zoomArea.y1 > zoomArea.y2) {
-        y.domain([zoomArea.y2, zoomArea.y1]);
-    } else {
-        y.domain([zoomArea.y1, zoomArea.y2]);
-    }
-
-    //update axis and redraw lines
-    var t = svg.transition().duration(750);
-    t.select(".x.axis").call(xAxis);
-    t.select(".y.axis").call(yAxis);
-    t.selectAll(".line").attr("d", line);
-
-}
-
 function updateChart(data) {
-    var xmax, ymax, xmin, ymin;
-    d3.selectAll('.line').remove();
-    d3.selectAll(".axis").remove();
+    d3.selectAll('svg').remove();
+    var xdata=[],
+        ndata=[],
+        ydata=[];
+<!--    console.log(data[0][0]);-->
+    tempdata=data[0]
+    //生成X轴的数据
+    count=0
+    $.each(tempdata,function (i) {
+        xdata.push(tempdata[i].x);
+        ndata.push(count);
+        count=count+1
+    });
 
-    data.forEach((da, idx) => {
-        xmax = da.map(d => d.x).reduce((a, c) => Math.max(a, c))
-        ymax = da.map(d => d.y).reduce((a, c) => Math.max(a, c))
+    xdata=d3.set(xdata).values();
 
-        xmin = da.map(d => d.x).reduce((a, c) => Math.min(a, c))
-        ymin = da.map(d => d.y).reduce((a, c) => Math.min(a, c))
-
-        xDomain = Math.max(xDomain, xmax);
-        yDomain = Math.max(yDomain, ymax);
-        xDomainMin = Math.min(xDomainMin, xmin);
-        yDomainMin = Math.min(yDomainMin, ymin);
-    })
-    xDomain += xDomain * .10;
-    yDomain += yDomain * .10;
-    xDomainMin += xDomainMin * .10;
-    yDomainMin += yDomainMin * .10;
-
-
-    line = d3.line()
-        .x(function (d) {
-            return x(d.x);
-        })
-        .y(function (d) {
-            return y(d.y);
-        });
-
-    zoomArea = {
-        x1: xDomainMin,
-        y1: yDomainMin,
-        x2: xDomain,
-        y2: yDomain
+    //生成y轴的数据
+    for(var i=0;i<xdata.length;i++){
+        var _sumi=0;
+        for(var j=0;j<tempdata.length;j++){
+             if(xdata[i]==tempdata[j].x){
+                 _sumi+=tempdata[j].y-0;
+             }
+        }
+        ydata.push(_sumi);
+    }
+<!--    console.log(xdata);-->
+<!--    console.log(ydata);-->
+    var barDataInfo={
+        title:{
+            text:"",
+            height:5
+        },
+        "margin":{top:20,right:20,bottom:20,left:20},
+        "chartmargin":{top:20,right:20,bottom:20,left:80},
+        "xdata":xdata,
+        "ndata":ndata,
+        "barData":ydata,
+        "color":["blue"]
     };
+    drawBar("graph",barDataInfo);
 
-    x = d3.scaleLinear().range([0, width]).domain([xDomainMin, xDomain]);
-    y = d3.scaleLinear().range([height, 0]).domain([yDomainMin, yDomain]);
+    function drawBar(idname,dataInfo) {
+         var _margin=dataInfo.margin;
+         var _sWidth=900 - _margin.left - _margin.right;
+         var _sHeight=450 - _margin.top - _margin.bottom;
 
-    xAxis = d3.axisBottom(x)
-    yAxis = d3.axisLeft(y)
+         var _titleHeight=dataInfo.title.height;
 
-    //UPDATE AXES
-    svg.append("g")
-        .attr("class", "x axis")
-        .call(xAxis)
-        .attr("transform", "translate(0," + height + ")");
+         var _chartHeight=_sHeight - _margin.top - _margin.bottom-_titleHeight;
+         var _chartWidth=_sWidth - _margin.left - _margin.right;
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis)
+         var _chartmargin=dataInfo.chartmargin;
 
-    data.forEach((da, idx) => {
-        svg.append("path")
-            .datum(da)
-            .attr("class", "line line" + idx)
-            .attr("clip-path", "url(#clip)")
-            .style("stroke", colors(idx))
-            .attr("d", line);
-    })
+         var _yaxisHeight=_chartHeight - _chartmargin.top - _chartmargin.bottom;
+         var _xaxisWidth=_chartWidth - _chartmargin.left - _chartmargin.right;
 
-    d3.select(".band").raise();
+         var _tooltip=d3.select("#"+idname)
+             .append("div")
+             .attr("class","tooltip");
 
-    zoom();
-}
+         var _svg=d3.select("#"+idname)
+             .append("svg")
+             .attr("width",_sWidth)
+             .attr("height",_sHeight);
 
-var zoomOut = function () {
-    x.domain([xDomainMin, xDomain]);
-    y.domain([yDomainMin, yDomain]);
+         var _level1_g=_svg.append("g")
+             .attr("transform","translate("+_margin.left+","+_margin.top+")");
 
-    var t = svg.transition().duration(750);
-    t.select(".x.axis").call(xAxis);
-    t.select(".y.axis").call(yAxis);
+         var _level2_g_title=_level1_g.append("g");
+         //标题
+         _level2_g_title.append("text")
+             .attr("x",_chartWidth*0.5)
+             .attr("y",_titleHeight)
+             .attr("text-anchor","middle")
+             .text(dataInfo.title.text)
+             .style("font-size","2.5vw");
 
-    t.selectAll(".line").attr("d", line);
+         var _levle2_g_chart=_level1_g.append("g")
+             .attr("transform","translate(0,"+_titleHeight+")");
+
+         // Y轴
+         var _level3_g_yaxis=_levle2_g_chart.append("g")
+             .attr("id","bar_yaxis")
+             .attr("transform","translate("+_chartmargin.left+","+_chartmargin.top+")");
+
+         var _yscale = d3.scaleLinear()
+             .domain([0,d3.max(barDataInfo.barData)])
+             .range([_yaxisHeight,0]);
+
+         var _yaxis=d3.axisLeft()
+             .scale(_yscale)
+             .ticks(5);
+
+         _yaxis(_level3_g_yaxis);
+
+         // X轴
+         var _level3_g_xaxis=_levle2_g_chart.append("g")
+             .attr("id","bar_xaxis")
+             .attr("transform","translate("+_chartmargin.left+","+(_chartHeight-_chartmargin.bottom)+")");
+
+         var _xscale= d3.scaleBand()
+             .padding(0.4)
+             .domain(dataInfo.ndata)
+             .range([0,_xaxisWidth*dataInfo.xdata.length/20]);//调节结果宽度
+
+         var _xaxis=d3.axisBottom()
+             .scale(_xscale);
+
+         _xaxis(_level3_g_xaxis);
+
+         // 核心绘图区
+         var _level3_g_content=_levle2_g_chart.append("g")
+             .attr("transform","translate("+_chartmargin.left+","+_chartmargin.top+")");
+
+         _level3_g_content.append("g")
+             .selectAll("rect")
+             .data(dataInfo.barData)
+             .enter()
+             .append("rect")
+             .attr("x",function (d, i) {
+                 return _xscale(dataInfo.ndata[i]);
+             })
+             .attr("y",_yaxisHeight)
+             .attr("width",_xscale.bandwidth())
+             .attr("height",0)
+             .style("fill",function (d, i) {
+                 return dataInfo.color[i];
+             })
+             .attr("flag","1")
+             .on("click",function (d,i) {
+                 if(d3.select(this).attr("flag")==1){
+                     d3.select(this.parentNode).selectAll("rect")
+                         .style("fill",function (d, i) {
+                             return dataInfo.color[i];
+                         })
+                         .attr("flag","1");
+                     d3.select(this)
+                         .style("fill","red")
+                         .attr("flag","0");
+                 }else{
+                     d3.select(this)
+                         .style("fill",function (d, i) {
+                             return dataInfo.color[i];
+                         })
+                         .attr("flag","1");
+                 }
+             })
+             .on("mouseover",function (d,i) {
+                 _tooltip.style("left",d3.event.pageX+10+"px")
+                     .style("top",d3.event.pageY+10+"px")
+                     .style("display","block")
+                     .html(function () {
+                         //console.log(i);
+                         return "比特："+barDataInfo.xdata[i] +"<br/><hr style='width: 100%;background: #fff;'>概率：" + barDataInfo.barData[i];
+                     });
+             })
+             .on("mousemove",function (d,i) {
+                 _tooltip.style("left",d3.event.pageX+10+"px")
+                     .style("top",d3.event.pageY+10+"px");
+             })
+             .on("mouseout",function (d,i) {
+                 _tooltip.style("display","none")
+             })
+             .transition()
+             .duration(3*1000)
+             .attr("y",function (d, i) {
+                 return _yscale(d);
+             })
+             .attr("height",function (d, i) {
+                 return _yaxisHeight-_yscale(d);
+             })
+             .style("fill",function (d, i) {
+                 return dataInfo.color[0];
+             });
+
+         // LABEL
+         _level3_g_content.append("g")
+             .selectAll("text")
+             .data(barDataInfo.barData)
+             .enter()
+             .append("text")
+             .attr("x",function (d, i) {
+                 return _xscale(barDataInfo.ndata[i])+_xscale.bandwidth()/2;
+             })
+             .attr("y",_yaxisHeight)
+             .attr("dy","-0.3em")
+             .attr("text-anchor","middle")
+             .text(function (d) {
+                 return d;
+             })
+             .style("font-weight","bold")
+             .transition()
+             .duration(3*1000)
+             .attr("y",function (d, i) {
+                 return _yscale(d);
+             })
+             .attr("height",function (d, i) {
+                 return _yaxisHeight-_yscale(d);
+             })
+             .style("fill",function (d, i) {
+                 return dataInfo.color[0];
+             });
+     }
 }
 </script>
 
@@ -325,82 +302,29 @@ var zoomOut = function () {
             <colgroup>
                 <col style="background-color:#EEE;"/>
                 <col/>
-                <col style="background-color:#EEE;"/>
-                <col/>
-                <col style="background-color:#EEE;"/>
             </colgroup>
             <tr>
-                <th>From Rotation</th>
-                <th></th>
-                <th>From Matrix</th>
-                <th></th>
-                <th>From Circuit</th>
+                <th>任意转角门</th>
             </tr>
             <tr>
                 <td>
-                    <input tabindex="100" id='gate-forge-rotation-axis' type="text" size="8" placeholder="X+Z"> axis<br/>
-                    <input tabindex="101" id='gate-forge-rotation-angle' type="text" size="8" placeholder="45" style="margin:0.5em 0 0 0;">° angle<br/>
-                    <input tabindex="102" id='gate-forge-rotation-phase' type="text" size="8" placeholder="0" style="margin:0.5em 0 0 0;">° phase
-                </td>
-                <td></td>
-                <td>
-                    <style scoped>
-                        input[type="checkbox"]:not(:checked) + label {
-                            font-weight: bold;
-                            background-color: pink;
-                        }
-                    </style>
-
-                    <textarea tabindex="200" id="gate-forge-matrix" cols="25" rows="5" placeholder="1, i,  i, 1"></textarea><br/>
-
-                    <input tabindex="201" id="gate-forge-matrix-fix" type="checkbox" checked>
-                    <label for="gate-forge-matrix-fix">ensure unitary (by SVD)</label>
-                </td>
-                <td></td>
-                <td>
-                    From part of current circuit:<br/>
-                    <input tabindex="300" id="gate-forge-circuit-cols" type="text" size="4" placeholder="1:∞" style="margin:0.5em 0 0 0;"> column range<br/>
-                    <input tabindex="301" id="gate-forge-circuit-rows" type="text" size="4" placeholder="1:∞" style="margin:0.5em 0 0.5em 0;"> wire range<br/>
-                    Inputs: <span id="gate-forge-circuit-inputs">(none)</span>, Weight: <span id="gate-forge-circuit-weight">0</span>
+                    <input tabindex="100" id='gate-forge-rotation-axis' type="text" size="8" placeholder="X"> 坐标<br/>
+                    <input tabindex="101" id='gate-forge-rotation-angle' type="text" size="8" placeholder="45" style="margin:0.5em 0 0 0;">转角<br/>
                 </td>
             </tr>
             <tr>
                 <td>
                     <canvas id="gate-forge-rotation-canvas" style="border:1px black solid;width:195px;height:100px;margin:10px 0 0 0;"></canvas>
                 </td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>OR</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            </tr>
+            <tr>
                 <td>
-                    <canvas id="gate-forge-matrix-canvas" style="border:1px black solid;width:195px;height:100px;margin:10px 0 0 0;"></canvas>
-                </td>
-                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>OR</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                <td>
-                    <canvas id="gate-forge-circuit-canvas" style="border:1px black solid;width:195px;height:100px;margin:10px 0 0 0;"></canvas>
+                    <br/><input tabindex="110" id='gate-forge-rotation-name' type="text" placeholder="A(t)" style="width:7em;">图标符号<br/><br/>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <br/><input tabindex="110" id='gate-forge-rotation-name' type="text" placeholder="[the matrix]" style="width:7em;">  circuit symbol<br/><br/>
-                </td>
-                <td></td>
-                <td>
-                    <br/><input tabindex="210" id='gate-forge-matrix-name' type="text" placeholder="[the matrix]" style="width:7em;"> circuit symbol<br/><br/>
-                </td>
-                <td></td>
-                <td>
-                    <br/><input tabindex="310" id='gate-forge-circuit-name' type="text" placeholder="[the circuit]" style="width:7em;"> circuit symbol<br/><br/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button tabindex="120" id="gate-forge-rotation-button" style="width:100%;height:30px;">Create Rotation Gate</button>
-                </td>
-                <td></td>
-                <td>
-                    <button tabindex="220" id="gate-forge-matrix-button" style="width:100%;height:30px;">Create Matrix Gate</button>
-                </td>
-                <td></td>
-                <td>
-                    <button tabindex="320" id="gate-forge-circuit-button" style="width:100%;height:30px;">Create Circuit Gate</button>
+                    <button tabindex="120" id="gate-forge-rotation-button" style="width:100%;height:30px;">创建转角门</button>
                 </td>
             </tr>
         </table>
@@ -13058,10 +12982,10 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   Config.MIN_WIRE_COUNT = 2;
   Config.MIN_COL_COUNT = 5;
   Config.URL_CIRCUIT_PARAM_KEY = 'circuit';
-  Config.GATE_FILL_COLOR = 'white';
-  Config.HIGHLIGHTED_GATE_FILL_COLOR = '#FB7';
-  Config.TIME_DEPENDENT_HIGHLIGHT_COLOR = '#FFC';
-  Config.DISPLAY_GATE_IN_TOOLBOX_FILL_COLOR = '#4F4';
+  Config.GATE_FILL_COLOR = '#77DDFF';
+  Config.HIGHLIGHTED_GATE_FILL_COLOR = '#FFC';
+  Config.TIME_DEPENDENT_HIGHLIGHT_COLOR = '#FFC8B4';
+  Config.DISPLAY_GATE_IN_TOOLBOX_FILL_COLOR = '#5599FF';
   Config.DISPLAY_GATE_BACK_COLOR = '#EFE';
   Config.DISPLAY_GATE_FORE_COLOR = '#3F3';
   Config.OPERATION_BACK_COLOR = '#FFE';
@@ -14938,7 +14862,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   Gates.UniversalNot = UniversalNotGate;
   Gates.XorGates = XorGates;
   Gates.ZeroGate = ZeroGate;
-  Gates.KnownToSerializer = $traceurRuntime.spread(Controls.all, InputGates.all, [MeasurementGate, Detector, SwapGateHalf, SpacerGate, UniversalNotGate, ErrorInjectionGate, ZeroGate, NeGate], ProbabilityDisplayFamily.all, SampleDisplayFamily.all, DensityMatrixDisplayFamily.all, [BlochSphereDisplay], ArithmeticGates.all, BitCountGates.all, ComparisonGates.all, CountingGates.all, CycleBitsGates.all, ExponentiatingGates.all, FourierTransformGates.all, HalfTurnGates.all, IncrementGates.all, InterleaveBitsGates.all, ModularAdditionGates.all, ModularIncrementGates.all, ModularMultiplicationGates.all, ModularMultiplyAccumulateGates.all, MultiplicationGates.all, MultiplyAccumulateGates.all, QuarterTurnGates.all, ParametrizedRotationGates.all, PhaseGradientGates.all, PivotFlipGates.all, PostSelectionGates.all, PoweringGates.all, ReverseBitsGateFamily.all, VariousXGates.all, VariousYGates.all, VariousZGates.all, XorGates.all);
+  Gates.KnownToSerializer = $traceurRuntime.spread(Controls.all, InputGates.all, [MeasurementGate, Detector, SwapGateHalf, SpacerGate, UniversalNotGate, ErrorInjectionGate, ZeroGate, NeGate], AmplitudeDisplayFamily.all, ProbabilityDisplayFamily.all, SampleDisplayFamily.all, DensityMatrixDisplayFamily.all, [BlochSphereDisplay], ArithmeticGates.all, BitCountGates.all, ComparisonGates.all, CountingGates.all, CycleBitsGates.all, ExponentiatingGates.all, FourierTransformGates.all, HalfTurnGates.all, IncrementGates.all, InterleaveBitsGates.all, ModularAdditionGates.all, ModularIncrementGates.all, ModularMultiplicationGates.all, ModularMultiplyAccumulateGates.all, MultiplicationGates.all, MultiplyAccumulateGates.all, QuarterTurnGates.all, ParametrizedRotationGates.all, PhaseGradientGates.all, PivotFlipGates.all, PostSelectionGates.all, PoweringGates.all, ReverseBitsGateFamily.all, VariousXGates.all, VariousYGates.all, VariousZGates.all, XorGates.all);
   var gatesById = seq(Gates.KnownToSerializer).keyedBy(function(g) {
     return g.serializedId;
   });
@@ -14946,8 +14870,20 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
     return gatesById.has(id) ? gatesById.get(id) : customGateSet.findGateWithSerializedId(id);
   };
   Gates.TopToolboxGroups = [{
-    hint: "基本量子门",
-    gates: [HalfTurnGates.Z, SwapGateHalf, HalfTurnGates.Y, Controls.Control, HalfTurnGates.X, HalfTurnGates.H]
+    hint: "多比特门",
+    gates: [SwapGateHalf, Controls.Control]
+  }, {
+    hint: "二分之一门",
+    gates: [HalfTurnGates.X, HalfTurnGates.Z, HalfTurnGates.Y, HalfTurnGates.H]
+  }, {
+    hint: "四分之一门",
+    gates: [QuarterTurnGates.SqrtZForward, QuarterTurnGates.SqrtZBackward, QuarterTurnGates.SqrtYForward, QuarterTurnGates.SqrtYBackward, QuarterTurnGates.SqrtXForward, QuarterTurnGates.SqrtXBackward]
+  }, {
+    hint: "八分之一门",
+    gates: [VariousZGates.Z4, VariousZGates.Z4i, VariousYGates.Y4, VariousYGates.Y4i, VariousXGates.X4, VariousXGates.X4i]
+  }, {
+    hint: "十六分之一门",
+    gates: [VariousZGates.Z8, VariousZGates.Z8i, VariousYGates.Y8, VariousYGates.Y8i, VariousXGates.X8, VariousXGates.X8i]
   }];
   Gates.BottomToolboxGroups = [];
   return {get Gates() {
@@ -16126,16 +16062,17 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
 ;$traceurRuntime.registerModule("src/gates/HalfTurnGates.js", [], function() {
   "use strict";
   var __moduleName = "src/gates/HalfTurnGates.js";
-  var $__2 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/circuit/Gate.js", "src/gates/HalfTurnGates.js")),
-      Gate = $__2.Gate,
-      GateBuilder = $__2.GateBuilder;
+  var Config = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/Config.js", "src/gates/HalfTurnGates.js")).Config;
+  var $__3 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/circuit/Gate.js", "src/gates/HalfTurnGates.js")),
+      Gate = $__3.Gate,
+      GateBuilder = $__3.GateBuilder;
   var GatePainting = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/draw/GatePainting.js", "src/gates/HalfTurnGates.js")).GatePainting;
   var Matrix = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/math/Matrix.js", "src/gates/HalfTurnGates.js")).Matrix;
   var Point = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/math/Point.js", "src/gates/HalfTurnGates.js")).Point;
-  var $__6 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/circuit/KetShaderUtil.js", "src/gates/HalfTurnGates.js")),
-      ketArgs = $__6.ketArgs,
-      ketShader = $__6.ketShader,
-      ketShaderPermute = $__6.ketShaderPermute;
+  var $__7 = $traceurRuntime.getModule($traceurRuntime.normalizeModuleName("src/circuit/KetShaderUtil.js", "src/gates/HalfTurnGates.js")),
+      ketArgs = $__7.ketArgs,
+      ketShader = $__7.ketShader,
+      ketShaderPermute = $__7.ketShaderPermute;
   var HalfTurnGates = {};
   function NOT_DRAWER(args) {
     if (args.isHighlighted) {
@@ -16170,14 +16107,14 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   HalfTurnGates.X = new GateBuilder().setSerializedIdAndSymbol("X").setTitle("Pauli X Gate").setBlurb("The NOT gate.\nToggles between ON and OFF.").setActualEffectToShaderProvider(function(ctx) {
     var $__1;
     return ($__1 = xShader).withArgs.apply($__1, $traceurRuntime.spread(ketArgs(ctx)));
-  }).setKnownEffectToMatrix(Matrix.PAULI_X).gate;
+  }).setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)).setKnownEffectToMatrix(Matrix.PAULI_X).gate;
   var yShader = ketShader('', 'vec2 v = inp(1.0-out_id); return (out_id*2.0 - 1.0)*vec2(-v.y, v.x);', 1);
   HalfTurnGates.Y = new GateBuilder().setSerializedIdAndSymbol("Y").setTitle("Pauli Y Gate").setBlurb("A combination of the X and Z gates.").setActualEffectToShaderProvider(function(ctx) {
     var $__1;
     return ($__1 = yShader).withArgs.apply($__1, $traceurRuntime.spread(ketArgs(ctx)));
-  }).setKnownEffectToMatrix(Matrix.PAULI_Y).gate;
+  }).setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)).setKnownEffectToMatrix(Matrix.PAULI_Y).gate;
   var zShader = ketShader('', 'return amp*(1.0 - out_id*2.0);', 1);
-  HalfTurnGates.Z = new GateBuilder().setSerializedIdAndSymbol("Z").setTitle("Pauli Z Gate").setBlurb("The phase flip gate.\nNegates phases when the qubit is ON.").setActualEffectToShaderProvider(function(ctx) {
+  HalfTurnGates.Z = new GateBuilder().setSerializedIdAndSymbol("Z").setTitle("Pauli Z Gate").setBlurb("The phase flip gate.\nNegates phases when the qubit is ON.").setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)).setActualEffectToShaderProvider(function(ctx) {
     var $__1;
     return ($__1 = zShader).withArgs.apply($__1, $traceurRuntime.spread(ketArgs(ctx)));
   }).setKnownEffectToMatrix(Matrix.PAULI_Z).gate;
@@ -16185,7 +16122,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   HalfTurnGates.H = new GateBuilder().setSerializedIdAndSymbol("H").setTitle("Hadamard Gate").setBlurb("Creates simple superpositions.\n" + "Maps ON to ON + OFF.\n" + "Maps OFF to ON - OFF.").setActualEffectToShaderProvider(function(ctx) {
     var $__1;
     return ($__1 = hShader).withArgs.apply($__1, $traceurRuntime.spread(ketArgs(ctx)));
-  }).setKnownEffectToMatrix(Matrix.HADAMARD).gate;
+  }).setDrawer(GatePainting.MAKE_HIGHLIGHTED_DRAWER(Config.TIME_DEPENDENT_HIGHLIGHT_COLOR)).setKnownEffectToMatrix(Matrix.HADAMARD).gate;
   HalfTurnGates.all = [HalfTurnGates.X, HalfTurnGates.Y, HalfTurnGates.Z, HalfTurnGates.H];
   return {get HalfTurnGates() {
       return HalfTurnGates;
@@ -17995,6 +17932,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   initUrlCircuitSync(revision);
   initRun(revision, obsIsAnyOverlayShowing.observable());
   initSparkRun(revision, obsIsAnyOverlayShowing.observable());
+  initForge(revision, obsIsAnyOverlayShowing.observable());
   initUndoRedo(revision, obsIsAnyOverlayShowing.observable());
   initClear(revision, obsIsAnyOverlayShowing.observable());
   initTitleSync(revision);
@@ -20350,7 +20288,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         for (var col = 0; col < this.circuitDefinition.columns.length; col++) {
           this._drawColumn(painter, this.circuitDefinition.columns[col], col, hand, stats);
         }
-        if (!forTooltip) {
+        if (forTooltip) {
           this._drawOutputDisplays(painter, stats, hand);
           this._drawHintLabels(painter, stats);
         }
@@ -20362,7 +20300,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
           for (var row = 0; row < drawnWireCount; row++) {
             var wireRect = this.wireRect(row);
             var y = wireRect.center().y;
-            painter.print('|0⟩', 20, y, 'right', 'middle', 'black', '14px sans-serif', 20, Config.WIRE_SPACING);
+            painter.print('Q|' + row + '⟩', 30, y, 'right', 'middle', 'black', '30px sans-serif', 30, Config.WIRE_SPACING);
           }
         }
         painter.ctx.save();
@@ -20374,7 +20312,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
               painter.trace(function(trace) {
                 var wireRect = $__2.wireRect(row);
                 var y = Math.round(wireRect.center().y - 0.5) + 0.5;
-                var lastX = showLabels ? 25 : 5;
+                var lastX = showLabels ? 30 : 5;
                 for (var col = 0; showLabels ? lastX < painter.canvas.width : col <= $__2.circuitDefinition.columns.length; col++) {
                   var x = $__2.opRect(col).center().x;
                   if ($__2.circuitDefinition.locIsMeasured(new Point(col, row))) {
@@ -20385,7 +20323,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
                   }
                   lastX = x;
                 }
-              }).thenStroke('black');
+              }).thenStroke('red');
             };
         for (var row$__16 = 0; row$__16 < drawnWireCount; row$__16++) {
           $__18(row$__16);
@@ -21137,7 +21075,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   var DisplayedInspector = function() {
     function DisplayedInspector(drawArea, circuitWidget, displayedToolboxTop, hand) {
       this.displayedCircuit = circuitWidget;
-      this.displayedToolboxTop = displayedToolboxTop;
+      this.displayedToolboxTop = displayedToolboxTop.withCustomGatesInserted(circuitWidget.circuitDefinition.customGateSet);
       this.hand = hand;
       this.drawArea = new Rect(0, 0, 0, 0);
       this.updateArea(drawArea);
@@ -21155,7 +21093,6 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         this.displayedToolboxTop.paint(painter, stats, this.hand);
         this.displayedCircuit.paint(painter, this.hand, stats);
         this._paintHand(painter, stats);
-        this._drawHint(painter);
       },
       _paintHand: function(painter, stats) {
         if (this.hand.pos === undefined || this.hand.heldGate === undefined) {
@@ -21356,7 +21293,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         painter.ctx.restore();
       }
     }, {empty: function(drawArea) {
-        var topToolbox = new DisplayedToolbox('Toolbox', 0, Gates.TopToolboxGroups, true, 3);
+        var topToolbox = new DisplayedToolbox(' ', 0, Gates.TopToolboxGroups, true, 3);
         var displayedCircuit = DisplayedCircuit.empty(topToolbox.desiredHeight());
         return new DisplayedInspector(drawArea, displayedCircuit, topToolbox, Hand.EMPTY);
       }});
@@ -21567,7 +21504,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         for (var col = 0; col < this.circuitDefinition.columns.length; col++) {
           this._drawColumn(painter, this.circuitDefinition.columns[col], col, hand, stats);
         }
-        if (!forTooltip) {
+        if (forTooltip) {
           this._drawOutputDisplays(painter, stats, hand);
           this._drawHintLabels(painter, stats);
         }
@@ -22373,7 +22310,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         var groups = $traceurRuntime.spread(this._originalGroups);
         for (var i = 0; i < Math.max(1, customGateSet.gates.length); i += this.groupHeight * 2) {
           var group = {
-            hint: 'Custom Gates',
+            hint: '自定义门',
             gates: [undefined, undefined, undefined, undefined, undefined, undefined]
           };
           for (var j = 0; j < this.groupHeight * 2 && i + j < customGateSet.gates.length; j++) {
@@ -22773,18 +22710,17 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
       var rotationButton = document.getElementById('gate-forge-rotation-button');
       var txtAxis = document.getElementById('gate-forge-rotation-axis');
       var txtAngle = document.getElementById('gate-forge-rotation-angle');
-      var txtPhase = document.getElementById('gate-forge-rotation-phase');
       var txtName = document.getElementById('gate-forge-rotation-name');
       obsOnShown.subscribe(function() {
         txtName.value = "";
       });
       function parseRotationFromInputs() {
-        return parseUserRotation(valueElsePlaceholder(txtAngle), valueElsePlaceholder(txtPhase), valueElsePlaceholder(txtAxis));
+        return parseUserRotation(valueElsePlaceholder(txtAngle), valueElsePlaceholder(txtAxis));
       }
       var redraw = function() {
         return computeAndPaintOp(rotationCanvas, parseRotationFromInputs, rotationButton);
       };
-      ($__5 = Observable).of.apply($__5, $traceurRuntime.spread([obsOnShown], [txtPhase, txtAxis, txtAngle].map(textEditObservable))).flatten().throttleLatest(100).subscribe(redraw);
+      ($__5 = Observable).of.apply($__5, $traceurRuntime.spread([obsOnShown], [txtAxis, txtAngle].map(textEditObservable))).flatten().throttleLatest(100).subscribe(redraw);
       rotationButton.addEventListener('click', function() {
         var mat;
         try {
@@ -22793,107 +22729,8 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
           console.warn(ex);
           return;
         }
-        var gate = new GateBuilder().setSerializedId('~' + Math.floor(Math.random() * (1 << 20)).toString(32)).setSymbol(txtName.value).setTitle('Custom Rotation Gate').setKnownEffectToMatrix(mat).gate;
+        var gate = new GateBuilder().setSerializedId('~' + Math.floor(Math.random() * (1 << 20)).toString(32)).setSymbol(txtName.value).setTitle('构造转角门').setKnownEffectToMatrix(mat).gate;
         createCustomGateAndClose(gate);
-      });
-    })();
-    (function() {
-      var matrixCanvas = document.getElementById('gate-forge-matrix-canvas');
-      var txtMatrix = document.getElementById('gate-forge-matrix');
-      var chkFix = document.getElementById('gate-forge-matrix-fix');
-      var matrixButton = document.getElementById('gate-forge-matrix-button');
-      var txtName = document.getElementById('gate-forge-matrix-name');
-      obsOnShown.subscribe(function() {
-        txtName.value = "";
-      });
-      function parseMatrixFromInputs() {
-        var text = valueElsePlaceholder(txtMatrix);
-        var ensureUnitary = chkFix.checked;
-        return parseUserMatrix(text, ensureUnitary);
-      }
-      var redraw = function() {
-        return computeAndPaintOp(matrixCanvas, parseMatrixFromInputs, matrixButton);
-      };
-      Observable.of(obsOnShown, textEditObservable(txtMatrix), Observable.elementEvent(chkFix, 'change')).flatten().throttleLatest(100).subscribe(redraw);
-      matrixButton.addEventListener('click', function() {
-        var mat;
-        try {
-          mat = parseMatrixFromInputs();
-        } catch (ex) {
-          console.warn(ex);
-          return;
-        }
-        var name = txtName.value.trim();
-        var h = Math.round(Math.log2(mat.height()));
-        var gate = new GateBuilder().setSerializedId('~' + Math.floor(Math.random() * (1 << 20)).toString(32)).setSymbol(name).setTitle('Custom Matrix Gate').setHeight(h).setWidth(name === '' ? h : 1).setKnownEffectToMatrix(mat).gate;
-        createCustomGateAndClose(gate);
-      });
-    })();
-    (function() {
-      var circuitCanvas = document.getElementById('gate-forge-circuit-canvas');
-      var txtCols = document.getElementById('gate-forge-circuit-cols');
-      var txtRows = document.getElementById('gate-forge-circuit-rows');
-      var spanInputs = document.getElementById('gate-forge-circuit-inputs');
-      var spanWeight = document.getElementById('gate-forge-circuit-weight');
-      var circuitButton = document.getElementById('gate-forge-circuit-button');
-      var txtName = document.getElementById('gate-forge-circuit-name');
-      obsOnShown.subscribe(function() {
-        txtName.value = "";
-      });
-      function parseEnteredCircuitGate() {
-        var circuit = fromJsonText_CircuitDefinition(latestInspectorText);
-        var gate = parseUserGateFromCircuitRange(circuit, valueElsePlaceholder(txtCols), valueElsePlaceholder(txtRows), txtName.value.trim());
-        return {
-          gate: gate,
-          circuit: circuit
-        };
-      }
-      var latestGate = new ObservableValue(undefined);
-      var drawGate = function(painter, gate) {
-        return drawCircuitTooltip(painter, gate.knownCircuitNested, new Rect(0, 0, circuitCanvas.width, circuitCanvas.height), true, getCircuitCycleTime());
-      };
-      latestGate.observable().zipLatest(obsForgeIsShowing, function(g, s) {
-        return s ? g : undefined;
-      }).map(function(e) {
-        return e === undefined || e.gate.stableDuration() === Infinity ? Observable.of() : Observable.requestAnimationTicker().map(function(_) {
-          return e;
-        });
-      }).flattenLatest().subscribe(function(e) {
-        var painter = new Painter(circuitCanvas);
-        painter.clear();
-        drawGate(painter, e.gate);
-      });
-      var redraw = function() {
-        circuitButton.disabled = true;
-        var painter = new Painter(circuitCanvas);
-        painter.clear();
-        try {
-          var gate = parseEnteredCircuitGate().gate;
-          var keys = gate.getUnmetContextKeys();
-          spanInputs.innerText = keys.size === 0 ? "(none)" : $traceurRuntime.spread(keys).map(function(e) {
-            return e.replace("Input Range ", "").replace("Input NO_DEFAULT Range ", "");
-          }).join(", ");
-          spanWeight.innerText = "" + gate.knownCircuit.gateWeight();
-          drawGate(painter, gate);
-          circuitButton.disabled = false;
-          latestGate.set({gate: gate});
-        } catch (ex) {
-          latestGate.set(undefined);
-          spanInputs.innerText = "(err)";
-          spanWeight.innerText = "(err)";
-          painter.printParagraph(ex + "", new Rect(0, 0, circuitCanvas.width, circuitCanvas.height), new Point(0.5, 0.5), 'red', 24);
-        }
-      };
-      Observable.of(obsOnShown, textEditObservable(txtCols), textEditObservable(txtRows)).flatten().throttleLatest(100).subscribe(redraw);
-      circuitButton.addEventListener('click', function() {
-        try {
-          var $__1 = parseEnteredCircuitGate(),
-              gate = $__1.gate,
-              circuit = $__1.circuit;
-          createCustomGateAndClose(gate, circuit);
-        } catch (ex) {
-          console.warn(ex);
-        }
       });
     })();
   }
@@ -22910,11 +22747,10 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
   function decreasePrecisionAndSerializedSize(matrix) {
     return Matrix.parse(matrix.toString(new Format(true, 0.0000001, 7, ",")));
   }
-  function parseUserRotation(angleText, phaseText, axisText) {
+  function parseUserRotation(angleText, axisText) {
     var $__3,
         $__4;
     var w = parseUserAngle(angleText);
-    var phase = parseUserAngle(phaseText);
     var $__1 = Axis.parse(axisText),
         x = $__1.x,
         y = $__1.y,
@@ -22929,7 +22765,7 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         Y = ($__4 = $__3.next()).done ? void 0 : $__4.value,
         Z = ($__4 = $__3.next()).done ? void 0 : $__4.value;
     var axisMatrix = X.times(x).plus(Y.times(y)).plus(Z.times(z));
-    var result = I.times(Math.cos(w / 2)).plus(axisMatrix.times(Complex.I.neg()).times(Math.sin(w / 2))).times(Complex.polar(1, phase));
+    var result = I.times(Math.cos(w / 2)).plus(axisMatrix.times(Complex.I.neg()).times(Math.sin(w / 2)));
     if (result.hasNaN()) {
       throw new DetailedError("NaN", {
         x: x,
@@ -22940,65 +22776,6 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
     }
     return decreasePrecisionAndSerializedSize(result);
   }
-  function parseUserGateMatrix_noCorrection(text) {
-    var $__5;
-    if (text.match(/[\{}\[\]]/)) {
-      return Matrix.parse(text.split(/[\{\[]/).join('{').split(/[}\]]/).join('}'));
-    }
-    text = text.split(/,?\s*\n\s*(?!$)/).join(',');
-    text = text.trim();
-    if (text.endsWith(',')) {
-      text = text.substring(0, text.length - 1);
-    }
-    var parts = text.split(',').map(function(e) {
-      return e === '' ? 0 : Complex.parse(e);
-    });
-    if (parts.length === 1) {
-      parts.push(0, 0, parts[0]);
-    }
-    var n = Math.max(4, 1 << (2 * Math.max(1, Util.floorLg2(Math.sqrt(parts.length)))));
-    if (n < parts.length) {
-      n <<= 2;
-    }
-    if (n > (1 << 8)) {
-      throw Error("Max custom matrix operation size is 4 qubits.");
-    }
-    return ($__5 = Matrix).square.apply($__5, $traceurRuntime.spread(parts, new Array(n - parts.length).fill(0)));
-  }
-  function parseUserMatrix(text, ensureUnitary) {
-    var op = parseUserGateMatrix_noCorrection(text);
-    if (op.width() !== op.height() || op.width() < 2 || op.width() > 16 || !Util.isPowerOf2(op.width())) {
-      throw Error("Matrix must be 2x2, 4x4, 8x8, or 16x16.");
-    }
-    if (ensureUnitary && !op.hasNaN()) {
-      op = op.closestUnitary(0.0001);
-      op = decreasePrecisionAndSerializedSize(op);
-    }
-    return op;
-  }
-  function parseRange(text, maxLen) {
-    var parts = text.split(":").map(function(e) {
-      return e.trim();
-    });
-    if (parts.length > 2) {
-      throw new Error("Too many colons.");
-    }
-    var infinities = [undefined, "", "∞"];
-    var min = parseInt(parts[0] || "1");
-    var max = infinities.indexOf(parts[1]) !== -1 ? Infinity : parseInt(parts[1]);
-    if (isNaN(min)) {
-      throw new Error("Not a number: " + parts[0]);
-    }
-    if (isNaN(max)) {
-      throw new Error("Not a number: " + parts[1]);
-    }
-    var start = Math.min(maxLen, Math.max(0, min - 1));
-    var end = Math.min(maxLen, Math.max(start, max));
-    return {
-      start: start,
-      end: end
-    };
-  }
   function removeBrokenGates(circuit) {
     var w = circuit.columns.length;
     var h = circuit.numWires;
@@ -23007,25 +22784,6 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         return gate === undefined || c + gate.width > w || r + gate.height > h ? undefined : gate;
       }).toArray());
     }).toArray());
-  }
-  function parseUserGateFromCircuitRange(circuit, colRangeText, wireRangeText, nameText) {
-    var colRange = parseRange(colRangeText, circuit.columns.length);
-    var rowRange = parseRange(wireRangeText, circuit.numWires);
-    if (rowRange.end === rowRange.start) {
-      throw new Error("Empty wire range.");
-    }
-    var cols = circuit.columns.slice(colRange.start, colRange.end).map(function(col) {
-      return new GateColumn(col.gates.slice(rowRange.start, rowRange.end));
-    });
-    var gateCircuit = new CircuitDefinition(rowRange.end - rowRange.start, cols);
-    gateCircuit = removeBrokenGates(gateCircuit);
-    gateCircuit = gateCircuit.withUncoveredColumnsRemoved();
-    if (gateCircuit.columns.length === 0) {
-      throw new Error("No gates in included range.");
-    }
-    var symbol = nameText;
-    var id = '~' + Math.floor(Math.random() * (1 << 20)).toString(32);
-    return setGateBuilderEffectToCircuit(new GateBuilder(), gateCircuit).setSerializedId(id).setSymbol(symbol).setTitle(id).setBlurb('A custom gate.').gate;
   }
   return {
     get initForge() {
@@ -23036,12 +22794,6 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
     },
     get parseUserRotation() {
       return parseUserRotation;
-    },
-    get parseUserMatrix() {
-      return parseUserMatrix;
-    },
-    get parseUserGateFromCircuitRange() {
-      return parseUserGateFromCircuitRange;
     }
   };
 });
@@ -23423,10 +23175,6 @@ $traceurRuntime.getModule("traceur-runtime@0.0.111/src/runtime/polyfills/polyfil
         $.getJSON("{{ url_for('quantumCircuit.run')}}", {data: document.getElementById('run-circuit-json-pre').innerText}, function(data) {
           runIsVisible.set(true);
           document.getElementById('run-circuit-json-show').innerText = JSON.stringify(data);
-          xDomain = 0;
-          yDomain = 0;
-          yDomainMin = 0;
-          xDomainMin = 0;
           if (Array.isArray(data)) {
             updateChart(data);
           }

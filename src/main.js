@@ -280,7 +280,7 @@ initUrlCircuitSync(revision);
 // initExports(revision, obsIsAnyOverlayShowing.observable());
 initRun(revision, obsIsAnyOverlayShowing.observable());
 initSparkRun(revision, obsIsAnyOverlayShowing.observable());
-// initForge(revision, obsIsAnyOverlayShowing.observable());
+initForge(revision, obsIsAnyOverlayShowing.observable());
 initUndoRedo(revision, obsIsAnyOverlayShowing.observable());
 initClear(revision, obsIsAnyOverlayShowing.observable());
 // initMenu(revision, obsIsAnyOverlayShowing.observable());

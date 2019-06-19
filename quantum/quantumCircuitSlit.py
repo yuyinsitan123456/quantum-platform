@@ -1,5 +1,4 @@
-import sys
-sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform//quantum')
+
 import math
 
 class splitTool:
@@ -27,7 +26,7 @@ class splitTool:
             if len(col)>upNum:
                 currentPosition=0
                 for gate in col:
-                    if gate == 'Swap':
+                    if gate == '•':
                         if upNum>currentPosition:
                             upSGate+=1
                         else:
@@ -39,7 +38,7 @@ class splitTool:
             currentDep+=1
 
         partitionCircuits=[]
-        gateTools=[1,-1]
+        gateTools=['P0','P1']
         partNum=pow(2,partiton)
         for num in range(0,partNum):
             s = bin(num)[2:].zfill(partiton)
@@ -55,28 +54,29 @@ class splitTool:
                     for i in range(0, len(col)):
                         partitionCircuitU.append(col[i])
                         print(partitionCircuitU)
-                    partitionCircuitD.append([])
                 else:
                     if currentDep in partitonDep:
+                        mark = 0
                         for i in range(0,upNum):
-                            if col[i]=='Swap':
+                            if col[i] == '•':
+                                mark = 1
                                 partitionCircuitU.append(gateTools[int(s[currentSDep])])
                             else:
                                 partitionCircuitU.append(col[i])
                         for i in range(upNum,len(col)):
-                            if col[i] == 'Swap':
-                                if s[currentSDep]=='0':
-                                    if i<len(col):
+                            if mark == 1:
+                                if s[currentSDep] == '0':
+                                    if i < len(col):
                                         partitionCircuitD.append(1)
                                 else:
-                                    partitionCircuitD.append('Z')
+                                    partitionCircuitD.append(col[i])
                             else:
                                 partitionCircuitD.append(col[i])
-                        currentSDep+=1
+                        currentSDep += 1
                     else:
-                        for i in range(0,upNum):
+                        for i in range(0, upNum):
                             partitionCircuitU.append(col[i])
-                        for i in range(upNum,len(col)):
+                        for i in range(upNum, len(col)):
                             partitionCircuitD.append(col[i])
                 partitionCircuitUs.append(partitionCircuitU)
                 partitionCircuitDs.append(partitionCircuitD)

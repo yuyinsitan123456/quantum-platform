@@ -3,9 +3,6 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
-import sys
-sys.path.insert(0, 'C://Users//cxzx//PycharmProjects//quantum-platform')
-
 from quantum.auth import login_required
 from quantum.db import get_db
 import json
